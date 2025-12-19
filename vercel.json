@@ -5,9 +5,8 @@
       "src": "wsgi_lite.py",
       "use": "@vercel/python",
       "config": {
-        "maxLambdaSize": "50mb",
-        "runtime": "python3.11",
-        "pipInstallArgs": "-r requirements-vercel.txt"
+        "maxLambdaSize": "15mb",
+        "runtime": "python3.11"
       }
     }
   ],
@@ -18,8 +17,6 @@
     }
   ],
   "env": {
-    "FLASK_ENV": "production",
-    "FLASK_DEBUG": "False",
-    "PYTHONPATH": "/vercel/path0"
+    "FLASK_ENV": "production"
   }
 }
