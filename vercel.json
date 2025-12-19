@@ -21,10 +21,5 @@
     "FLASK_DEBUG": "False",
     "PYTHONPATH": "/vercel/path0"
   },
-  "functions": {
-    "wsgi_lite.py": {
-      "maxDuration": 30
-    }
-  },
   "installCommand": "pip install -r requirements-vercel.txt"
 }

@@ -1,20 +1,20 @@
-/* Dark Cyberpunk Theme */
+/* Light Blue Theme */
 :root {
-    --primary-bg: #0a0a0f;
-    --secondary-bg: #1a1a2e;
-    --accent-bg: #16213e;
-    --card-bg: #0f1419;
-    --border-color: #2d3748;
-    --accent-color: #00d4ff;
-    --secondary-accent: #ff6b6b;
-    --success-color: #4ecdc4;
-    --warning-color: #ffe66d;
-    --danger-color: #ff6b6b;
-    --text-primary: #ffffff;
-    --text-secondary: #a0aec0;
-    --text-muted: #718096;
-    --glow-color: #00d4ff;
-    --neural-color: #9f7aea;
+    --primary-bg: #ffffff;
+    --secondary-bg: #f8fafc;
+    --accent-bg: #e6f3ff;
+    --card-bg: #ffffff;
+    --border-color: #e2e8f0;
+    --accent-color: #3b82f6;
+    --secondary-accent: #ef4444;
+    --success-color: #10b981;
+    --warning-color: #f59e0b;
+    --danger-color: #ef4444;
+    --text-primary: #1e293b;
+    --text-secondary: #475569;
+    --text-muted: #64748b;
+    --glow-color: #3b82f6;
+    --neural-color: #8b5cf6;
 }
 
 * {
@@ -24,8 +24,8 @@
 }
 
 body {
-    font-family: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
-    background: var(--primary-bg);
+    font-family: 'Inter', 'Segoe UI', 'Roboto', sans-serif;
+    background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
     color: var(--text-primary);
     min-height: 100vh;
     overflow-x: hidden;
@@ -51,14 +51,14 @@ body {
 
 /* Navigation */
 .navbar {
-    background: linear-gradient(135deg, var(--secondary-bg), var(--accent-bg));
+    background: linear-gradient(135deg, var(--primary-bg), var(--accent-bg));
     backdrop-filter: blur(20px);
     border-bottom: 1px solid var(--border-color);
     padding: 1rem 0;
     position: sticky;
     top: 0;
     z-index: 100;
-    box-shadow: 0 4px 20px rgba(0, 212, 255, 0.1);
+    box-shadow: 0 2px 10px rgba(59, 130, 246, 0.1);
 }
 
 .nav-container {
@@ -103,7 +103,7 @@ body {
 
 /* Hero Section */
 .hero-section {
-    background: linear-gradient(135deg, var(--secondary-bg), var(--accent-bg));
+    background: linear-gradient(135deg, var(--accent-bg), var(--primary-bg));
     padding: 3rem 2rem;
     position: relative;
     overflow: hidden;
@@ -257,8 +257,14 @@ body {
 }
 
 .nav-icon {
-    font-size: 1.5rem;
+    font-size: 0.8rem;
     min-width: 30px;
+    font-weight: bold;
+    background: var(--accent-color);
+    color: white;
+    border-radius: 4px;
+    padding: 0.3rem 0.2rem;
+    text-align: center;
 }
 
 .nav-content {
@@ -445,19 +451,29 @@ body {
     border-color: var(--accent-color);
     background: linear-gradient(45deg, var(--secondary-bg), var(--accent-bg));
     transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(0, 212, 255, 0.1);
+    box-shadow: 0 8px 25px rgba(59, 130, 246, 0.1);
 }
 
 .upload-zone.dragover {
     border-color: var(--success-color);
     background: linear-gradient(45deg, var(--accent-bg), var(--card-bg));
-    box-shadow: 0 0 30px rgba(78, 205, 196, 0.3);
+    box-shadow: 0 0 30px rgba(16, 185, 129, 0.3);
 }
 
 .upload-icon {
-    font-size: 3rem;
+    font-size: 2rem;
     margin-bottom: 1rem;
     opacity: 0.7;
+    font-weight: bold;
+    background: var(--accent-color);
+    color: white;
+    border-radius: 50%;
+    width: 80px;
+    height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1rem auto;
 }
 
 .upload-zone h4 {
@@ -627,9 +643,19 @@ body {
 }
 
 .empty-icon {
-    font-size: 3rem;
+    font-size: 1.5rem;
     margin-bottom: 1rem;
     opacity: 0.5;
+    font-weight: bold;
+    background: var(--border-color);
+    color: var(--text-muted);
+    border-radius: 50%;
+    width: 60px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1rem auto;
 }
 
 .history-item {
@@ -754,12 +780,14 @@ body {
 }
 
 .brain-scan::before {
-    content: '🧠';
+    content: 'AI';
     position: absolute;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    font-size: 2rem;
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: var(--accent-color);
 }
 
 @keyframes brainScan {
@@ -892,7 +920,7 @@ body {
     align-items: center;
     min-height: 100vh;
     padding: 2rem;
-    background: linear-gradient(135deg, var(--primary-bg), var(--secondary-bg));
+    background: linear-gradient(135deg, #f0f9ff, #e0f2fe);
 }
 
 .auth-form {
@@ -902,7 +930,7 @@ body {
     padding: 3rem;
     width: 100%;
     max-width: 400px;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 10px 40px rgba(59, 130, 246, 0.1);
 }
 
 .auth-form h1 {

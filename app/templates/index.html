@@ -3,7 +3,7 @@
 {% block content %}
 <div class="hero-section">
     <div class="hero-content">
-        <h1>🔮 FalsifyX </h1>
+        <h1>FalsifyX</h1>
         <p class="hero-subtitle">Advanced AI-powered forensic analysis for digital media authentication</p>
         <p class="welcome-message">Welcome back, <strong>{{ username }}</strong> | Security Clearance: Level 5</p>
     </div>
@@ -19,11 +19,11 @@
     <!-- Sidebar Navigation -->
     <div class="sidebar">
         <div class="sidebar-header">
-            <h3>🧠 Analysis Modules</h3>
+            <h3>Analysis Modules</h3>
         </div>
         <nav class="sidebar-nav">
             <button class="nav-item active" data-section="image">
-                <div class="nav-icon">📸</div>
+                <div class="nav-icon">IMG</div>
                 <div class="nav-content">
                     <div class="nav-title">Image Forensics</div>
                     <div class="nav-desc">Face manipulation detection</div>
@@ -31,7 +31,7 @@
                 <div class="nav-badge" id="imageBadge">0</div>
             </button>
             <button class="nav-item" data-section="video">
-                <div class="nav-icon">🎬</div>
+                <div class="nav-icon">VID</div>
                 <div class="nav-content">
                     <div class="nav-title">Video Analysis</div>
                     <div class="nav-desc">Temporal deepfake detection</div>
@@ -39,7 +39,7 @@
                 <div class="nav-badge" id="videoBadge">0</div>
             </button>
             <button class="nav-item" data-section="audio">
-                <div class="nav-icon">🎵</div>
+                <div class="nav-icon">AUD</div>
                 <div class="nav-content">
                     <div class="nav-title">Audio Forensics</div>
                     <div class="nav-desc">Voice synthesis detection</div>
@@ -47,7 +47,7 @@
                 <div class="nav-badge" id="audioBadge">0</div>
             </button>
         </nav>
-        
+
         <div class="sidebar-stats">
             <div class="stat-item">
                 <div class="stat-value" id="totalAnalyses">0</div>
@@ -65,50 +65,50 @@
         <!-- Image Analysis Section -->
         <div id="imageSection" class="analysis-section active">
             <div class="section-header">
-                <h2>📸 Image Forensics Laboratory</h2>
+                <h2>Image Forensics Laboratory</h2>
                 <div class="section-controls">
-                    <button class="control-btn" id="clearImageHistory">🗑️ Clear History</button>
+                    <button class="control-btn" id="clearImageHistory">Clear History</button>
                 </div>
             </div>
-            
+
             <div class="section-content">
                 <!-- Detection Portal -->
                 <div class="detection-portal">
                     <div class="portal-header">
-                        <h3>🔍 Detection Portal</h3>
+                        <h3>Detection Portal</h3>
                         <div class="portal-status">
                             <span class="status-indicator active"></span>
                             <span>Neural Network: Online</span>
                         </div>
                     </div>
-                    
+
                     <div class="upload-area" id="imageUploadArea">
                         <div class="upload-zone" data-type="image">
-                            <div class="upload-icon">📸</div>
+                            <div class="upload-icon">IMG</div>
                             <h4>Drop Image Files Here</h4>
                             <p>Supports: JPG, PNG, JPEG, WebP</p>
                             <input type="file" id="imageInput" accept="image/*" multiple hidden>
                             <button class="upload-btn" onclick="document.getElementById('imageInput').click()">
-                                📁 Browse Images
+                                Browse Images
                             </button>
                         </div>
-                        
+
                         <div id="imagePreviewArea" class="preview-area hidden">
                             <div class="preview-container">
                                 <img id="imagePreview" alt="Image preview">
                                 <div class="preview-overlay">
-                                    <button class="action-btn analyze" id="analyzeImageBtn">🔍 Analyze</button>
-                                    <button class="action-btn clear" id="clearImageBtn">🗑️ Clear</button>
+                                    <button class="action-btn analyze" id="analyzeImageBtn">Analyze</button>
+                                    <button class="action-btn clear" id="clearImageBtn">Clear</button>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-                
+
                 <!-- History Panel -->
                 <div class="history-panel">
                     <div class="history-header">
-                        <h3>📋 Analysis History</h3>
+                        <h3>Analysis History</h3>
                         <div class="history-filter">
                             <select id="imageHistoryFilter">
                                 <option value="all">All Results</option>
@@ -119,7 +119,7 @@
                     </div>
                     <div class="history-content" id="imageHistory">
                         <div class="empty-history">
-                            <div class="empty-icon">📊</div>
+                            <div class="empty-icon">HIST</div>
                             <p>No analysis history yet</p>
                             <small>Upload an image to start detecting deepfakes</small>
                         </div>
@@ -131,50 +131,50 @@
         <!-- Video Analysis Section -->
         <div id="videoSection" class="analysis-section">
             <div class="section-header">
-                <h2>🎬 Video Analysis Laboratory</h2>
+                <h2>Video Analysis Laboratory</h2>
                 <div class="section-controls">
-                    <button class="control-btn" id="clearVideoHistory">🗑️ Clear History</button>
+                    <button class="control-btn" id="clearVideoHistory">Clear History</button>
                 </div>
             </div>
-            
+
             <div class="section-content">
                 <!-- Detection Portal -->
                 <div class="detection-portal">
                     <div class="portal-header">
-                        <h3>🔍 Detection Portal</h3>
+                        <h3>Detection Portal</h3>
                         <div class="portal-status">
                             <span class="status-indicator active"></span>
                             <span>Temporal Analysis: Online</span>
                         </div>
                     </div>
-                    
+
                     <div class="upload-area" id="videoUploadArea">
                         <div class="upload-zone" data-type="video">
-                            <div class="upload-icon">🎬</div>
+                            <div class="upload-icon">VID</div>
                             <h4>Drop Video Files Here</h4>
                             <p>Supports: MP4, AVI, MOV, WebM</p>
                             <input type="file" id="videoInput" accept="video/*" multiple hidden>
                             <button class="upload-btn" onclick="document.getElementById('videoInput').click()">
-                                📁 Browse Videos
+                                Browse Videos
                             </button>
                         </div>
-                        
+
                         <div id="videoPreviewArea" class="preview-area hidden">
                             <div class="preview-container">
                                 <video id="videoPreview" controls></video>
                                 <div class="preview-overlay">
-                                    <button class="action-btn analyze" id="analyzeVideoBtn">🔍 Analyze</button>
-                                    <button class="action-btn clear" id="clearVideoBtn">🗑️ Clear</button>
+                                    <button class="action-btn analyze" id="analyzeVideoBtn">Analyze</button>
+                                    <button class="action-btn clear" id="clearVideoBtn">Clear</button>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-                
+
                 <!-- History Panel -->
                 <div class="history-panel">
                     <div class="history-header">
-                        <h3>📋 Analysis History</h3>
+                        <h3>Analysis History</h3>
                         <div class="history-filter">
                             <select id="videoHistoryFilter">
                                 <option value="all">All Results</option>
@@ -185,7 +185,7 @@
                     </div>
                     <div class="history-content" id="videoHistory">
                         <div class="empty-history">
-                            <div class="empty-icon">📊</div>
+                            <div class="empty-icon">HIST</div>
                             <p>No analysis history yet</p>
                             <small>Upload a video to start detecting deepfakes</small>
                         </div>
@@ -197,50 +197,50 @@
         <!-- Audio Analysis Section -->
         <div id="audioSection" class="analysis-section">
             <div class="section-header">
-                <h2>🎵 Audio Forensics Laboratory</h2>
+                <h2>Audio Forensics Laboratory</h2>
                 <div class="section-controls">
-                    <button class="control-btn" id="clearAudioHistory">🗑️ Clear History</button>
+                    <button class="control-btn" id="clearAudioHistory">Clear History</button>
                 </div>
             </div>
-            
+
             <div class="section-content">
                 <!-- Detection Portal -->
                 <div class="detection-portal">
                     <div class="portal-header">
-                        <h3>🔍 Detection Portal</h3>
+                        <h3>Detection Portal</h3>
                         <div class="portal-status">
                             <span class="status-indicator active"></span>
                             <span>Voice Analysis: Online</span>
                         </div>
                     </div>
-                    
+
                     <div class="upload-area" id="audioUploadArea">
                         <div class="upload-zone" data-type="audio">
-                            <div class="upload-icon">🎵</div>
+                            <div class="upload-icon">AUD</div>
                             <h4>Drop Audio Files Here</h4>
                             <p>Supports: MP3, WAV, OGG, M4A</p>
                             <input type="file" id="audioInput" accept="audio/*" multiple hidden>
                             <button class="upload-btn" onclick="document.getElementById('audioInput').click()">
-                                📁 Browse Audio
+                                Browse Audio
                             </button>
                         </div>
-                        
+
                         <div id="audioPreviewArea" class="preview-area hidden">
                             <div class="preview-container">
                                 <audio id="audioPreview" controls></audio>
                                 <div class="preview-overlay">
-                                    <button class="action-btn analyze" id="analyzeAudioBtn">🔍 Analyze</button>
-                                    <button class="action-btn clear" id="clearAudioBtn">🗑️ Clear</button>
+                                    <button class="action-btn analyze" id="analyzeAudioBtn">Analyze</button>
+                                    <button class="action-btn clear" id="clearAudioBtn">Clear</button>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-                
+
                 <!-- History Panel -->
                 <div class="history-panel">
                     <div class="history-header">
-                        <h3>📋 Analysis History</h3>
+                        <h3>Analysis History</h3>
                         <div class="history-filter">
                             <select id="audioHistoryFilter">
                                 <option value="all">All Results</option>
@@ -251,7 +251,7 @@
                     </div>
                     <div class="history-content" id="audioHistory">
                         <div class="empty-history">
-                            <div class="empty-icon">📊</div>
+                            <div class="empty-icon">HIST</div>
                             <p>No analysis history yet</p>
                             <small>Upload audio to start detecting synthetic voices</small>
                         </div>
@@ -266,7 +266,7 @@
 <div id="analysisModal" class="modal hidden">
     <div class="modal-content">
         <div class="modal-header">
-            <h3>🧠 Neural Analysis in Progress</h3>
+            <h3>Neural Analysis in Progress</h3>
             <button class="modal-close" id="closeModal">×</button>
         </div>
         <div class="modal-body">
@@ -290,14 +290,14 @@
 <div id="resultsModal" class="modal hidden">
     <div class="modal-content large">
         <div class="modal-header">
-            <h3 id="resultsTitle">📊 Analysis Results</h3>
+            <h3 id="resultsTitle">Analysis Results</h3>
             <button class="modal-close" id="closeResultsModal">×</button>
         </div>
         <div class="modal-body">
             <div id="resultsContent"></div>
             <div class="results-actions">
-                <button class="action-btn" id="saveResults">💾 Save Results</button>
-                <button class="action-btn" id="newAnalysis">🔄 New Analysis</button>
+                <button class="action-btn" id="saveResults">Save Results</button>
+                <button class="action-btn" id="newAnalysis">New Analysis</button>
             </div>
         </div>
     </div>
