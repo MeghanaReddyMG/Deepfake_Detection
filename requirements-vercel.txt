@@ -1,4 +1,4 @@
-# Lightweight requirements for Vercel deployment
+# Lightweight requirements for Vercel deployment (Python 3.11 compatible)
 # Core Framework
 flask==2.3.3
 python-dotenv==1.0.0
@@ -17,3 +17,6 @@ gunicorn==21.2.0
 
 # Utilities
 tqdm==4.66.1
+
+# Flask CORS for API
+flask-cors==4.0.0
