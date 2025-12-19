@@ -113,6 +113,26 @@ git push heroku main
 heroku open
 ```
 
+### Vercel Deployment (Serverless)
+
+1. **Install Vercel CLI**
+```bash
+npm install -g vercel
+```
+
+2. **Deploy to Vercel**
+```bash
+# Login to Vercel
+vercel login
+
+# Deploy (uses vercel.json configuration)
+vercel --prod
+
+# Or connect GitHub repository via Vercel dashboard
+```
+
+**Note:** Vercel deployment uses lightweight version (`wsgi_lite.py`) with mock ML analysis for demo purposes due to serverless limitations.
+
 ### Railway Deployment
 
 1. **Connect GitHub Repository**
