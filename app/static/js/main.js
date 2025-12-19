@@ -24,7 +24,10 @@ const LabState = {
 };
 
 function initializeLab() {
-    console.log('🧠 Initializing FalsifyX Detection Lab...');
+    console.log('Initializing FalsifyX Detection Lab...');
+    
+    // Initialize theme system
+    initializeTheme();
     
     // Get all DOM elements
     const elements = getDOMElements();
@@ -47,7 +50,7 @@ function initializeLab() {
     // Update statistics
     updateStatistics(elements);
     
-    console.log('✅ FalsifyX Detection Lab initialized successfully');
+    console.log('FalsifyX Detection Lab initialized successfully');
 }
 
 function getDOMElements() {
@@ -357,7 +360,7 @@ function clearAudioPreview(elements) {
 }
 
 async function analyzeFile(file, type, elements) {
-    console.log(`🔍 Starting ${type} analysis...`);
+    console.log(`Starting ${type} analysis...`);
     
     // Show analysis modal
     showAnalysisModal(type, elements);
@@ -558,7 +561,7 @@ function loadHistory(type, elements) {
     if (history.length === 0) {
         historyElement.innerHTML = `
             <div class="empty-history">
-                <div class="empty-icon">📊</div>
+                <div class="empty-icon">HIST</div>
                 <p>No analysis history yet</p>
                 <small>Upload ${type === 'image' ? 'an image' : type === 'video' ? 'a video' : 'audio'} to start detecting deepfakes</small>
             </div>
@@ -594,10 +597,10 @@ function createHistoryItem(item) {
     
     if (userFeedback) {
         if (isCorrect) {
-            feedbackIcon = '✅';
+            feedbackIcon = 'CORRECT';
             feedbackClass = 'feedback-correct';
         } else {
-            feedbackIcon = '❌';
+            feedbackIcon = 'INCORRECT';
             feedbackClass = 'feedback-incorrect';
         }
     } else {
@@ -612,7 +615,7 @@ function createHistoryItem(item) {
                 <span>${date}</span>
             </div>
             <div class="history-result">
-                ${isFake ? '🚨 FAKE DETECTED' : '✅ AUTHENTIC'}
+                ${isFake ? 'FAKE DETECTED' : 'AUTHENTIC'}
                 <span class="feedback-indicator" title="${userFeedback ? (isCorrect ? 'AI was correct' : 'AI was incorrect') : 'Feedback needed'}">${feedbackIcon}</span>
             </div>
             <div class="history-confidence">
@@ -754,7 +757,7 @@ function showResultsModal(result, type, elements) {
     closeAllModals(elements);
     elements.resultsModal.classList.remove('hidden');
     
-    elements.resultsTitle.textContent = `📊 ${type.charAt(0).toUpperCase() + type.slice(1)} Analysis Results`;
+    elements.resultsTitle.textContent = `${type.charAt(0).toUpperCase() + type.slice(1)} Analysis Results`;
     
     const resultsHTML = createDetailedResults(result);
     elements.resultsContent.innerHTML = resultsHTML;
@@ -770,7 +773,7 @@ function createDetailedResults(result) {
         <div class="result-item ${isFake ? 'fake' : 'real'} ${userFeedback ? (isCorrect ? 'feedback-correct' : 'feedback-incorrect') : ''}">
             <div class="result-header">
                 <div class="result-status ${isFake ? 'fake' : 'real'}">
-                    ${isFake ? '🚨 DEEPFAKE DETECTED' : '✅ AUTHENTIC MEDIA'}
+                    ${isFake ? 'DEEPFAKE DETECTED' : 'AUTHENTIC MEDIA'}
                 </div>
                 <div class="confidence-score confidence-${getConfidenceLevel(result.summary.confidence)}">
                     ${confidence}%
@@ -780,8 +783,8 @@ function createDetailedResults(result) {
             ${userFeedback ? `
                 <div class="feedback-status ${isCorrect ? 'correct' : 'incorrect'}">
                     ${isCorrect ? 
-                        '✅ AI Prediction: CORRECT' : 
-                        `❌ AI Prediction: INCORRECT - Actually ${userFeedback.actualResult ? 'FAKE' : 'AUTHENTIC'}`
+                        'AI Prediction: CORRECT' : 
+                        `AI Prediction: INCORRECT - Actually ${userFeedback.actualResult ? 'FAKE' : 'AUTHENTIC'}`
                     }
                     <small>Feedback provided by user</small>
                 </div>
@@ -802,18 +805,18 @@ function createDetailedResults(result) {
                 <p><strong>Assessment:</strong> <span class="assessment-${result.summary.authenticity ? result.summary.authenticity.toLowerCase() : 'unknown'}">${result.summary.authenticity || 'UNKNOWN'}</span></p>
                 
                 <div class="image-analysis-details">
-                    <h4>🖼️ Enhanced Image Analysis</h4>
+                    <h4>Enhanced Image Analysis</h4>
                     <div class="analysis-grid">
                         <div class="analysis-item">
                             <span class="analysis-label">Deepfake Detection:</span>
                             <span class="analysis-value ${result.summary.deepfakeDetected ? 'positive' : 'negative'}">
-                                ${result.summary.deepfakeDetected ? '⚠️ DETECTED' : '✅ CLEAR'}
+                                ${result.summary.deepfakeDetected ? 'DETECTED' : 'CLEAR'}
                             </span>
                         </div>
                         <div class="analysis-item">
                             <span class="analysis-label">AI Generation:</span>
                             <span class="analysis-value ${result.summary.aiGeneratedDetected ? 'positive' : 'negative'}">
-                                ${result.summary.aiGeneratedDetected ? '🤖 DETECTED' : '✅ CLEAR'}
+                                ${result.summary.aiGeneratedDetected ? 'DETECTED' : 'CLEAR'}
                             </span>
                         </div>
                     </div>
@@ -834,13 +837,13 @@ function createDetailedResults(result) {
                         <div class="analysis-item">
                             <span class="analysis-label">Deepfake Detection:</span>
                             <span class="analysis-value ${result.summary.deepfakeDetected ? 'positive' : 'negative'}">
-                                ${result.summary.deepfakeDetected ? '⚠️ DETECTED' : '✅ CLEAR'}
+                                ${result.summary.deepfakeDetected ? 'DETECTED' : 'CLEAR'}
                             </span>
                         </div>
                         <div class="analysis-item">
                             <span class="analysis-label">AI Generation:</span>
                             <span class="analysis-value ${result.summary.aiGeneratedDetected ? 'positive' : 'negative'}">
-                                ${result.summary.aiGeneratedDetected ? '🤖 DETECTED' : '✅ CLEAR'}
+                                ${result.summary.aiGeneratedDetected ? 'DETECTED' : 'CLEAR'}
                             </span>
                         </div>
                     </div>
@@ -860,13 +863,13 @@ function createDetailedResults(result) {
                         <div class="analysis-item">
                             <span class="analysis-label">Voice Cloning:</span>
                             <span class="analysis-value ${result.summary.deepfakeDetected ? 'positive' : 'negative'}">
-                                ${result.summary.deepfakeDetected ? '⚠️ DETECTED' : '✅ CLEAR'}
+                                ${result.summary.deepfakeDetected ? 'DETECTED' : 'CLEAR'}
                             </span>
                         </div>
                         <div class="analysis-item">
                             <span class="analysis-label">AI Generation:</span>
                             <span class="analysis-value ${result.summary.aiGeneratedDetected ? 'positive' : 'negative'}">
-                                ${result.summary.aiGeneratedDetected ? '🤖 DETECTED' : '✅ CLEAR'}
+                                ${result.summary.aiGeneratedDetected ? 'DETECTED' : 'CLEAR'}
                             </span>
                         </div>
                     </div>
@@ -880,25 +883,25 @@ function createDetailedResults(result) {
             ${!userFeedback ? `
                 <div class="feedback-section">
                     <div class="feedback-header">
-                        <h4>🎯 Help Improve AI Accuracy</h4>
+                        <h4>Help Improve AI Accuracy</h4>
                         <p>Was this analysis correct? Your feedback helps train the system.</p>
                     </div>
                     <div class="feedback-buttons">
                         <button class="feedback-btn correct" onclick="provideFeedback('${result.id}', true)">
-                            ✅ AI is Correct
+                            AI is Correct
                         </button>
                         <button class="feedback-btn incorrect-fake" onclick="provideFeedback('${result.id}', false, true)">
-                            ❌ Actually FAKE
+                            Actually FAKE
                         </button>
                         <button class="feedback-btn incorrect-real" onclick="provideFeedback('${result.id}', false, false)">
-                            ❌ Actually AUTHENTIC
+                            Actually AUTHENTIC
                         </button>
                     </div>
                 </div>
             ` : `
                 <div class="feedback-section completed">
                     <div class="feedback-header">
-                        <h4>📊 Feedback Recorded</h4>
+                        <h4>Feedback Recorded</h4>
                         <p>Thank you for helping improve the AI system!</p>
                     </div>
                     <div class="feedback-actions">
@@ -936,7 +939,7 @@ function showNotification(message, type = 'info') {
     notification.className = `notification notification-${type}`;
     notification.innerHTML = `
         <div class="notification-content">
-            <span class="notification-icon">${type === 'error' ? '⚠️' : type === 'success' ? '✅' : 'ℹ️'}</span>
+            <span class="notification-icon">${type === 'error' ? 'ERROR' : type === 'success' ? 'SUCCESS' : 'INFO'}</span>
             <span class="notification-message">${message}</span>
             <button class="notification-close" onclick="this.parentElement.parentElement.remove()">×</button>
         </div>
@@ -1162,20 +1165,75 @@ async function updateLearningSystem(item) {
         });
         
         const result = await response.json();
-        console.log('🧠 Learning response:', result);
+        console.log('Learning response:', result);
         
         if (response.ok) {
-            console.log('✅ Learning system updated successfully');
+            console.log('Learning system updated successfully');
             showNotification(
-                `🧠 FalsifyX learned from your feedback! This file is now marked as ${item.userFeedback.actualResult ? 'FAKE' : 'AUTHENTIC'}. Future uploads will be more accurate.`, 
+                `FalsifyX learned from your feedback! This file is now marked as ${item.userFeedback.actualResult ? 'FAKE' : 'AUTHENTIC'}. Future uploads will be more accurate.`, 
                 'success'
             );
         } else {
-            console.warn('❌ Failed to update learning system:', result);
+            console.warn('Failed to update learning system:', result);
             showNotification('Failed to update learning system: ' + result.error, 'error');
         }
     } catch (error) {
-        console.error('❌ Error updating learning system:', error);
+        console.error('Error updating learning system:', error);
         showNotification('Error updating learning system: ' + error.message, 'error');
     }
+}
+
+// Theme Management System
+function initializeTheme() {
+    // Check for saved theme preference or default to 'light'
+    const savedTheme = localStorage.getItem('theme') || 'light';
+    document.documentElement.setAttribute('data-theme', savedTheme);
+    
+    // Create theme toggle button
+    createThemeToggle();
+}
+
+function createThemeToggle() {
+    // Check if toggle already exists
+    if (document.getElementById('themeToggle')) return;
+    
+    // Create theme toggle button
+    const themeToggle = document.createElement('button');
+    themeToggle.id = 'themeToggle';
+    themeToggle.className = 'theme-toggle';
+    themeToggle.innerHTML = `
+        <span class="theme-icon light-icon">☀</span>
+        <span class="theme-icon dark-icon">☾</span>
+    `;
+    themeToggle.title = 'Toggle Dark/Light Mode';
+    
+    // Add click event
+    themeToggle.addEventListener('click', toggleTheme);
+    
+    // Add to navbar
+    const navbar = document.querySelector('.nav-container');
+    if (navbar) {
+        navbar.appendChild(themeToggle);
+    }
+}
+
+function toggleTheme() {
+    const currentTheme = document.documentElement.getAttribute('data-theme');
+    const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+    
+    document.documentElement.setAttribute('data-theme', newTheme);
+    localStorage.setItem('theme', newTheme);
+    
+    // Add transition effect
+    document.documentElement.style.transition = 'all 0.3s ease';
+    setTimeout(() => {
+        document.documentElement.style.transition = '';
+    }, 300);
+}
+
+// Initialize theme when DOM is loaded
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initializeTheme);
+} else {
+    initializeTheme();
 }

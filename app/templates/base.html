@@ -10,7 +10,10 @@
     <nav class="navbar">
         <div class="nav-container">
             <div class="nav-brand">
-                <h2>FalsifyX</h2>
+                <a href="/" class="logo">
+                    <div class="logo-icon">FX</div>
+                    <span class="logo-text">FalsifyX</span>
+                </a>
             </div>
             <div class="nav-user">
                 <span>Welcome, {{ session.username }}!</span>
@@ -19,6 +22,21 @@
         </div>
     </nav>
     {% endif %}
+    
+    <!-- Animated Background Elements -->
+    <div class="grid-bg"></div>
+    <div class="geometric-bg">
+        <div class="geometric-shape"></div>
+        <div class="geometric-shape"></div>
+        <div class="geometric-shape"></div>
+        <div class="geometric-shape"></div>
+    </div>
+    <div class="bg-elements">
+        <div class="bg-element"></div>
+        <div class="bg-element"></div>
+        <div class="bg-element"></div>
+        <div class="bg-element"></div>
+    </div>
     
     <div class="container">
         {% block content %}{% endblock %}

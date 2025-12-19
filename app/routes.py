@@ -122,26 +122,26 @@ def test_learning():
         # Test retrieval
         learned = get_learned_result(test_hash, 'image')
         
-        html = '<h1>🧠 Learning System Test</h1>'
+        html = '<h1>Learning System Test</h1>'
         html += '<style>body{font-family:Arial,sans-serif;background:#0a0a0f;color:#fff;padding:20px;}</style>'
         html += f'<p><strong>Test Hash:</strong> {test_hash}</p>'
         html += f'<p><strong>Test Analysis ID:</strong> {test_analysis_id}</p>'
         html += f'<p><strong>Learned Result:</strong> {learned}</p>'
         
         if learned:
-            html += f'<p style="color: #4ecdc4;">✅ Learning system is working!</p>'
-            html += f'<p>The system learned that this file is: <strong>{"🚨 FAKE" if learned["is_fake"] else "✅ AUTHENTIC"}</strong></p>'
+            html += f'<p style="color: #4ecdc4;">Learning system is working!</p>'
+            html += f'<p>The system learned that this file is: <strong>{"FAKE" if learned["is_fake"] else "AUTHENTIC"}</strong></p>'
             html += f'<p>Confidence: {learned.get("confidence", 0):.2f}</p>'
         else:
-            html += f'<p style="color: #ff6b6b;">❌ Learning system not working</p>'
+            html += f'<p style="color: #ff6b6b;">Learning system not working</p>'
         
-        html += f'<br><a href="/debug_learning" style="color:#00d4ff;">🔍 View Learning Database</a>'
-        html += f'<br><a href="/" style="color:#00d4ff;">🏠 Back to Home</a>'
+        html += f'<br><a href="/debug_learning" style="color:#00d4ff;">View Learning Database</a>'
+        html += f'<br><a href="/" style="color:#00d4ff;">Back to Home</a>'
         
         return html
         
     except Exception as e:
-        return f'<h1>❌ Error</h1><p>{str(e)}</p>'
+        return f'<h1>Error</h1><p>{str(e)}</p>'
 
 @main_bp.route('/debug_learning')
 @login_required
@@ -155,7 +155,7 @@ def debug_learning():
             with open(learning_file, 'r') as f:
                 learning_db = json.load(f)
             
-            html = '<h1>🧠 FalsifyX Learning Database</h1>'
+            html = '<h1>FalsifyX Learning Database</h1>'
             html += f'<p>Total entries: {len(learning_db)}</p>'
             html += '<style>body{font-family:Arial,sans-serif;background:#0a0a0f;color:#fff;} .entry{border:1px solid #2d3748;margin:10px;padding:15px;background:#1a1a2e;border-radius:8px;} .learned{border-left:4px solid #4ecdc4;} .pending{border-left:4px solid #ffe66d;}</style>'
             
@@ -165,30 +165,30 @@ def debug_learning():
                 html += f'<h3>🔑 {key}</h3>'
                 
                 if not key.startswith('analysis_'):
-                    html += f'<p><strong>📁 Filename:</strong> {data.get("filename", "N/A")}</p>'
-                    html += f'<p><strong>🎯 Type:</strong> {data.get("media_type", "N/A")}</p>'
-                    html += f'<p><strong>🔐 Hash:</strong> {data.get("file_hash", "N/A")[:16]}...</p>'
-                    html += f'<p><strong>🆔 Analysis ID:</strong> {data.get("analysis_id", "N/A")}</p>'
+                    html += f'<p><strong>Filename:</strong> {data.get("filename", "N/A")}</p>'
+                    html += f'<p><strong>Type:</strong> {data.get("media_type", "N/A")}</p>'
+                    html += f'<p><strong>Hash:</strong> {data.get("file_hash", "N/A")[:16]}...</p>'
+                    html += f'<p><strong>Analysis ID:</strong> {data.get("analysis_id", "N/A")}</p>'
                     
                     if 'learned_result' in data:
                         lr = data['learned_result']
-                        html += f'<p style="color: #4ecdc4;"><strong>🧠 LEARNED:</strong> {"🚨 FAKE" if lr.get("is_fake") else "✅ AUTHENTIC"} (confidence: {lr.get("confidence", 0):.2f})</p>'
-                        html += f'<p><strong>📅 Learned at:</strong> {time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(lr.get("feedback_timestamp", 0)))}</p>'
+                        html += f'<p style="color: #4ecdc4;"><strong>LEARNED:</strong> {"FAKE" if lr.get("is_fake") else "AUTHENTIC"} (confidence: {lr.get("confidence", 0):.2f})</p>'
+                        html += f'<p><strong>Learned at:</strong> {time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(lr.get("feedback_timestamp", 0)))}</p>'
                     else:
-                        html += f'<p style="color: #ffe66d;"><strong>📊 Status:</strong> No learning data yet</p>'
+                        html += f'<p style="color: #ffe66d;"><strong>Status:</strong> No learning data yet</p>'
                 else:
                     # Analysis lookup entry
-                    html += f'<p><strong>🔗 Hash Key:</strong> {data.get("hash_key", "N/A")}</p>'
-                    html += f'<p><strong>📁 Filename:</strong> {data.get("filename", "N/A")}</p>'
+                    html += f'<p><strong>Hash Key:</strong> {data.get("hash_key", "N/A")}</p>'
+                    html += f'<p><strong>Filename:</strong> {data.get("filename", "N/A")}</p>'
                 
                 html += '</div>'
             
             return html
         else:
-            return '<h1>🧠 Learning Database</h1><p>No learning database found yet. Upload and analyze some files first!</p>'
+            return '<h1>Learning Database</h1><p>No learning database found yet. Upload and analyze some files first!</p>'
     
     except Exception as e:
-        return f'<h1>❌ Error</h1><p>{str(e)}</p>'
+        return f'<h1>Error</h1><p>{str(e)}</p>'
 
 @main_bp.route('/feedback', methods=['POST'])
 @login_required
@@ -273,7 +273,7 @@ def get_learned_result(file_hash, media_type):
         key = f"{file_hash}_{media_type}"
         if key in learning_db and 'learned_result' in learning_db[key]:
             learned_data = learning_db[key]['learned_result']
-            print(f"🧠 USING LEARNED RESULT for {key}: {learned_data}")
+            print(f"USING LEARNED RESULT for {key}: {learned_data}")
             return learned_data
         
         return None
@@ -348,7 +348,7 @@ def update_learning():
             media_type = feedback_data.get('type')
             filename = feedback_data.get('filename')
             
-            print(f"🧠 LEARNING: File '{filename}' is actually {'FAKE' if actual_result else 'AUTHENTIC'}")
+            print(f"LEARNING: File '{filename}' is actually {'FAKE' if actual_result else 'AUTHENTIC'}")
             
             # Find the file hash from the analysis
             import json
@@ -367,13 +367,13 @@ def update_learning():
                     # Found by analysis ID - get the hash key
                     analysis_data = learning_db[analysis_lookup_key]
                     matching_key = analysis_data.get('hash_key')
-                    print(f"🎯 Found by analysis ID: {analysis_id} -> {matching_key}")
+                    print(f"Found by analysis ID: {analysis_id} -> {matching_key}")
                 else:
                     # Fallback 1: Try to find by analysis_id in the main entries
                     for key, data in learning_db.items():
                         if not key.startswith('analysis_') and data.get('analysis_id') == analysis_id:
                             matching_key = key
-                            print(f"🎯 Found by analysis_id in entry: {analysis_id} -> {matching_key}")
+                            print(f"Found by analysis_id in entry: {analysis_id} -> {matching_key}")
                             break
                     
                     # Fallback 2: Find matching entry by filename and type (most recent one)
@@ -389,11 +389,11 @@ def update_learning():
                                 latest_timestamp = data.get('timestamp', 0)
                         
                         if matching_key:
-                            print(f"🔍 Found by filename fallback: {filename} -> {matching_key}")
+                            print(f"Found by filename fallback: {filename} -> {matching_key}")
                     
                     # Fallback 3: Create a new entry if file doesn't exist yet
                     if not matching_key:
-                        print(f"⚠️ No existing entry found, creating new learning entry for {filename}")
+                        print(f"No existing entry found, creating new learning entry for {filename}")
                         # Calculate a simple hash from filename for the key
                         import hashlib
                         simple_hash = hashlib.md5(f"{filename}_{media_type}_{time.time()}".encode()).hexdigest()[:16]
@@ -420,7 +420,7 @@ def update_learning():
                         'analysis_id': analysis_id
                     }
                     
-                    print(f"✅ LEARNING STORED: {matching_key} -> {'FAKE' if actual_result else 'AUTHENTIC'}")
+                    print(f"LEARNING STORED: {matching_key} -> {'FAKE' if actual_result else 'AUTHENTIC'}")
                     
                     # Save updated database
                     with open(learning_file, 'w') as f:
@@ -433,7 +433,7 @@ def update_learning():
                         'learned_result': actual_result
                     })
                 else:
-                    print(f"❌ No matching entry found for analysis_id: {analysis_id}, filename: {filename} ({media_type})")
+                    print(f"No matching entry found for analysis_id: {analysis_id}, filename: {filename} ({media_type})")
                     # Debug: show what's in the database
                     print("Available entries:")
                     for key, data in learning_db.items():
@@ -441,14 +441,14 @@ def update_learning():
                             print(f"  {key}: {data.get('filename')} ({data.get('media_type')})")
                     return jsonify({'error': 'No matching file entry found'}), 404
             else:
-                print(f"❌ Learning database file not found")
+                print(f"Learning database file not found")
                 return jsonify({'error': 'Learning database not found'}), 404
         else:
-            print(f"✅ User confirmed AI was correct - no learning needed")
+            print(f"User confirmed AI was correct - no learning needed")
             return jsonify({'status': 'success', 'message': 'No learning update needed'})
         
     except Exception as e:
-        print(f"❌ Error updating learning database: {e}")
+        print(f"Error updating learning database: {e}")
         import traceback
         traceback.print_exc()
         return jsonify({'error': 'Failed to update learning database'}), 500
@@ -503,7 +503,7 @@ def process_image(filepath, filename):
     import json
     
     print(f"Analyzing image: {filename}")
-    print("🖼️ Running comprehensive image analysis...")
+    print("Running comprehensive image analysis...")
     print("   - Face manipulation detection")
     print("   - AI-generated content detection")
     print("   - Pixel-level artifact analysis")
@@ -536,7 +536,7 @@ def process_image(filepath, filename):
     }
     
     if learned_result:
-        print(f"🧠 USING LEARNED RESULT for file hash: {file_hash}")
+        print(f"USING LEARNED RESULT for file hash: {file_hash}")
         # Use learned result with high confidence
         for i in range(max(1, num_faces)):  # At least 1 result
             results.append({
@@ -617,7 +617,7 @@ def process_image(filepath, filename):
     fake_faces = sum(1 for r in results if isinstance(r, dict) and r.get('is_fake', False))
     ai_generated_content = sum(1 for r in results if isinstance(r, dict) and r.get('ai_generated', False))
     
-    print(f"🖼️ Image analysis complete:")
+    print(f"Image analysis complete:")
     print(f"   - Faces detected: {num_faces}")
     print(f"   - Deepfake faces: {fake_faces}")
     print(f"   - AI-generated content detected: {ai_generated_content}")
@@ -633,7 +633,7 @@ def process_video(filepath, filename):
     import hashlib
     
     print(f"Analyzing video: {filename}")
-    print("🎬 Running comprehensive video analysis...")
+    print("Running comprehensive video analysis...")
     print("   - Face manipulation detection")
     print("   - AI-generated content detection")
     print("   - Temporal consistency analysis")
@@ -756,7 +756,7 @@ def process_video(filepath, filename):
     ai_frames = sum(1 for frame in results if isinstance(frame, dict) and isinstance(frame.get('ai_generated'), dict) and frame.get('ai_generated', {}).get('is_ai_generated', False))
     fake_frames = sum(1 for frame in results if isinstance(frame, dict) and any(face.get('is_fake', False) for face in frame.get('face', [])))
     
-    print(f"🎬 Video analysis complete:")
+    print(f"Video analysis complete:")
     print(f"   - Frames analyzed: {len(results)-1}")  # -1 for summary
     print(f"   - AI-generated frames detected: {ai_frames}")
     print(f"   - Deepfake frames detected: {fake_frames}")
@@ -771,7 +771,7 @@ def process_audio(filepath, filename):
     import hashlib
     
     print(f"Analyzing audio: {filename}")
-    print("🎵 Running comprehensive audio analysis...")
+    print("Running comprehensive audio analysis...")
     print("   - Voice cloning detection")
     print("   - AI-generated speech detection")
     print("   - Spectral analysis")
@@ -805,7 +805,7 @@ def process_audio(filepath, filename):
     sample_rate = random.choice([16000, 22050, 44100, 48000])
     
     if learned_result:
-        print(f"🧠 Using learned result for audio file hash: {file_hash}")
+        print(f"Using learned result for audio file hash: {file_hash}")
         # Use learned result with high confidence
         is_fake = learned_result['is_fake']
         confidence = random.uniform(0.85, 0.98)
@@ -859,7 +859,7 @@ def process_audio(filepath, filename):
     # Store file hash for future learning
     store_analysis_hash(file_hash, filename, 'audio', results, analysis_id)
     
-    print(f"🎵 Audio analysis complete:")
+    print(f"Audio analysis complete:")
     print(f"   - Voice cloning: {'DETECTED' if is_fake else 'NOT DETECTED'} ({confidence:.2f})")
     print(f"   - AI-generated: {'DETECTED' if ai_generated else 'NOT DETECTED'} ({ai_confidence:.2f})")
     print(f"   - Duration: {duration:.1f}s")
