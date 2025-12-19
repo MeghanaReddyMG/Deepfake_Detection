@@ -1,0 +1,22 @@
+version: '3.8'
+
+services:
+  falsifyx:
+    build: .
+    ports:
+      - "5000:5000"
+    environment:
+      - FLASK_ENV=production
+      - FLASK_DEBUG=False
+      - SECRET_KEY=your-production-secret-key-here
+      - UPLOAD_FOLDER=/app/static_files/uploads
+      - TEMP_FOLDER=/app/static_files/temp
+    volumes:
+      - ./static_files:/app/static_files
+      - ./models:/app/models
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
