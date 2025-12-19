@@ -3,9 +3,18 @@
 {% block content %}
 <div class="hero-section">
     <div class="hero-content">
-        <h1>FalsifyX</h1>
+        <div class="main-logo">
+            <div class="logo-container">
+                <div class="logo-shield">
+                    <div class="shield-inner">
+                        <div class="shield-icon"></div>
+                    </div>
+                </div>
+                <h1 class="brand-name">FalsifyX</h1>
+            </div>
+        </div>
         <p class="hero-subtitle">Advanced AI-powered forensic analysis for digital media authentication</p>
-        <p class="welcome-message">Welcome back, <strong>{{ username }}</strong> | Security Clearance: Level 5</p>
+        <p class="welcome-message">Welcome back, <strong>{{ username }}</strong></p>
     </div>
     <div class="particles">
         <div class="particle" style="left: 10%; animation-delay: 0s;"></div>
@@ -20,56 +29,83 @@
     </div>
 </div>
 
-<!-- Main Dashboard -->
-<div class="dashboard-container">
-    <!-- Sidebar Navigation -->
-    <div class="sidebar">
-        <div class="sidebar-header">
-            <h3>Analysis Modules</h3>
-        </div>
-        <nav class="sidebar-nav">
-            <button class="nav-item active" data-section="image">
-                <div class="nav-icon">IMG</div>
-                <div class="nav-content">
-                    <div class="nav-title">Image Forensics</div>
-                    <div class="nav-desc">Face manipulation detection</div>
+<!-- Analysis Modules Selection -->
+<div class="modules-container">
+    <div class="modules-grid">
+        <div class="module-card" data-module="image">
+            <div class="module-icon">
+                <div class="icon-bg">
+                    <svg viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/>
+                    </svg>
                 </div>
-                <div class="nav-badge" id="imageBadge">0</div>
-            </button>
-            <button class="nav-item" data-section="video">
-                <div class="nav-icon">VID</div>
-                <div class="nav-content">
-                    <div class="nav-title">Video Analysis</div>
-                    <div class="nav-desc">Temporal deepfake detection</div>
-                </div>
-                <div class="nav-badge" id="videoBadge">0</div>
-            </button>
-            <button class="nav-item" data-section="audio">
-                <div class="nav-icon">AUD</div>
-                <div class="nav-content">
-                    <div class="nav-title">Audio Forensics</div>
-                    <div class="nav-desc">Voice synthesis detection</div>
-                </div>
-                <div class="nav-badge" id="audioBadge">0</div>
-            </button>
-        </nav>
-
-        <div class="sidebar-stats">
-            <div class="stat-item">
-                <div class="stat-value" id="totalAnalyses">0</div>
-                <div class="stat-label">Total Analyses</div>
             </div>
-            <div class="stat-item">
-                <div class="stat-value" id="fakeDetected">0</div>
-                <div class="stat-label">Fakes Detected</div>
+            <h3>Image Analysis</h3>
+            <p>Check if photos are real or fake using AI detection</p>
+            <div class="module-stats">
+                <span id="imageBadge">0</span> analyses
+            </div>
+        </div>
+
+        <div class="module-card" data-module="video">
+            <div class="module-icon">
+                <div class="icon-bg">
+                    <svg viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z"/>
+                    </svg>
+                </div>
+            </div>
+            <h3>Video Analysis</h3>
+            <p>Detect fake videos and deepfakes in video content</p>
+            <div class="module-stats">
+                <span id="videoBadge">0</span> analyses
+            </div>
+        </div>
+
+        <div class="module-card" data-module="audio">
+            <div class="module-icon">
+                <div class="icon-bg">
+                    <svg viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 2c1.1 0 2 .9 2 2v6c0 1.1-.9 2-2 2s-2-.9-2-2V4c0-1.1.9-2 2-2zm5.3 6c-.08 0-.15.04-.2.1-.05.06-.08.14-.08.23v1.17c0 2.76-2.24 5-5 5s-5-2.24-5-5V8.33c0-.09-.03-.17-.08-.23-.05-.06-.12-.1-.2-.1-.08 0-.15.04-.2.1-.05.06-.08.14-.08.23V9.5c0 3.31 2.69 6 6 6 .34 0 .68-.03 1-.08V17h2v-1.58c.32.05.66.08 1 .08 3.31 0 6-2.69 6-6V8.33c0-.09-.03-.17-.08-.23-.05-.06-.12-.1-.2-.1z"/>
+                    </svg>
+                </div>
+            </div>
+            <h3>Audio Analysis</h3>
+            <p>Spot fake voices and cloned speech in audio files</p>
+            <div class="module-stats">
+                <span id="audioBadge">0</span> analyses
             </div>
         </div>
     </div>
 
-    <!-- Main Content Area -->
-    <div class="main-content">
+    <div class="stats-summary">
+        <div class="stat-card">
+            <div class="stat-number" id="totalAnalyses">0</div>
+            <div class="stat-label">Total Analyses</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number" id="fakeDetected">0</div>
+            <div class="stat-label">Fakes Detected</div>
+        </div>
+        <div class="stat-card" id="accuracyStat">
+            <div class="stat-number" id="accuracyValue">N/A</div>
+            <div class="stat-label">AI Accuracy</div>
+        </div>
+    </div>
+</div>
+
+    <!-- Analysis Detail View -->
+    <div class="analysis-detail-view hidden" id="analysisDetailView">
+        <button class="back-button" id="backToModules">← Back to Modules</button>
+        <div class="detail-content">
+            <!-- Content will be dynamically loaded here -->
+        </div>
+    </div>
+
+    <!-- Hidden Section Templates -->
+    <div style="display: none;" id="sectionTemplates">
         <!-- Image Analysis Section -->
-        <div id="imageSection" class="analysis-section active">
+        <div id="imageSection" class="analysis-section">
             <div class="section-header">
                 <h2>Image Forensics Laboratory</h2>
                 <div class="section-controls">
@@ -79,14 +115,8 @@
 
             <!-- Analysis Description -->
             <div class="analysis-description">
-                <h3>Image Deepfake Detection</h3>
-                <p>Our advanced AI model analyzes images to detect face manipulation, AI-generated content, and synthetic media. Using computer vision and deep learning, we identify:</p>
-                <ul class="feature-list">
-                    <li>Face manipulation and deepfake detection</li>
-                    <li>AI-generated images (GAN, Diffusion, StyleGAN, DALL-E, Midjourney)</li>
-                    <li>Pixel-level artifact analysis</li>
-                    <li>Frequency domain analysis for generation signatures</li>
-                </ul>
+                <h3>Image Analysis</h3>
+                <p>Upload any image to check if it's real or fake. Our AI can detect deepfakes, face swaps, and AI-generated images from tools like DALL-E, Midjourney, and others. The system looks for hidden patterns and inconsistencies that humans can't see to determine if your image is authentic or artificially created.</p>
                 <div class="file-specs">
                     <div class="spec-item">
                         <strong>Supported Formats:</strong> JPG, JPEG, PNG, WebP
@@ -168,14 +198,8 @@
 
             <!-- Analysis Description -->
             <div class="analysis-description">
-                <h3>Video Deepfake Detection</h3>
-                <p>Advanced temporal analysis to detect AI-generated videos and face manipulation across video frames. Our system analyzes motion patterns, temporal consistency, and frame-by-frame authenticity:</p>
-                <ul class="feature-list">
-                    <li>Temporal deepfake detection across video frames</li>
-                    <li>AI-generated video detection with comprehensive analysis</li>
-                    <li>Blink pattern analysis for unnatural patterns</li>
-                    <li>Motion consistency and frame interpolation detection</li>
-                </ul>
+                <h3>Video Analysis</h3>
+                <p>Upload videos to detect if they contain deepfakes or AI-generated content. Our system checks each frame for fake faces, unnatural movements, and suspicious patterns. It can spot face swaps, AI-created videos, and other digital manipulations by analyzing how people move and blink throughout the video.</p>
                 <div class="file-specs">
                     <div class="spec-item">
                         <strong>Supported Formats:</strong> MP4, AVI, MOV, WebM
@@ -257,14 +281,8 @@
 
             <!-- Analysis Description -->
             <div class="analysis-description">
-                <h3>Audio Deepfake Detection</h3>
-                <p>Sophisticated spectral analysis to detect AI-generated speech, voice cloning, and synthetic audio. Our models analyze acoustic patterns, prosody, and neural vocoder traces:</p>
-                <ul class="feature-list">
-                    <li>Voice cloning detection through spectral analysis</li>
-                    <li>AI-generated speech detection (TTS, Neural vocoders)</li>
-                    <li>Prosody and rhythm analysis for synthetic patterns</li>
-                    <li>Neural vocoder trace detection (WaveNet, Tacotron, VALL-E)</li>
-                </ul>
+                <h3>Audio Analysis</h3>
+                <p>Upload audio files to check if voices are real or artificially generated. Our AI can detect voice cloning, synthetic speech, and fake audio created by text-to-speech tools. The system listens for unnatural patterns and digital fingerprints that reveal when someone's voice has been faked or cloned.</p>
                 <div class="file-specs">
                     <div class="spec-item">
                         <strong>Supported Formats:</strong> MP3, WAV, OGG, M4A
@@ -335,7 +353,7 @@
             </div>
         </div>
     </div>
-</div>
+    </div> <!-- End of sectionTemplates -->
 
 <!-- Analysis Modal -->
 <div id="analysisModal" class="modal hidden">

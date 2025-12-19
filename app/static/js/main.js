@@ -29,11 +29,14 @@ function initializeLab() {
     // Initialize theme system
     initializeTheme();
     
+    // Initialize module-based interface
+    initializeModules();
+    
     // Get all DOM elements
     const elements = getDOMElements();
     if (!elements) return;
     
-    // Initialize navigation
+    // Initialize navigation (for backward compatibility)
     initializeNavigation(elements);
     
     // Initialize each section
@@ -53,7 +56,118 @@ function initializeLab() {
     console.log('FalsifyX Detection Lab initialized successfully');
 }
 
+// New Module-based Interface
+function initializeModules() {
+    const moduleCards = document.querySelectorAll('.module-card');
+    const modulesContainer = document.querySelector('.modules-container');
+    const analysisDetailView = document.getElementById('analysisDetailView');
+    const backButton = document.getElementById('backToModules');
+    
+    if (!moduleCards.length) return;
+    
+    // Add click handlers to module cards
+    moduleCards.forEach(card => {
+        card.addEventListener('click', () => {
+            const moduleType = card.getAttribute('data-module');
+            showModuleDetail(moduleType);
+        });
+        
+        // Add hover effects
+        card.addEventListener('mouseenter', () => {
+            card.style.transform = 'translateY(-10px) scale(1.02)';
+        });
+        
+        card.addEventListener('mouseleave', () => {
+            card.style.transform = 'translateY(0) scale(1)';
+        });
+    });
+    
+    // Back button handler
+    if (backButton) {
+        backButton.addEventListener('click', () => {
+            showModulesView();
+        });
+    }
+}
+
+function showModuleDetail(moduleType) {
+    console.log(`🔄 Showing module detail for: ${moduleType}`);
+    
+    const modulesContainer = document.querySelector('.modules-container');
+    const analysisDetailView = document.getElementById('analysisDetailView');
+    const detailContent = document.querySelector('.detail-content');
+    
+    console.log('Elements found:', {
+        modulesContainer: !!modulesContainer,
+        analysisDetailView: !!analysisDetailView,
+        detailContent: !!detailContent
+    });
+    
+    if (!modulesContainer || !analysisDetailView || !detailContent) {
+        console.error('Required elements not found');
+        return;
+    }
+    
+    // Hide modules view
+    modulesContainer.classList.add('hidden');
+    
+    // Show detail view
+    analysisDetailView.classList.remove('hidden');
+    
+    // Load the appropriate section content
+    const sectionElement = document.getElementById(`${moduleType}Section`);
+    console.log(`Section element ${moduleType}Section found:`, !!sectionElement);
+    
+    if (sectionElement && detailContent) {
+        detailContent.innerHTML = sectionElement.innerHTML;
+        console.log(`✅ Content loaded for ${moduleType} section`);
+        
+        // Re-initialize the section functionality
+        const elements = getDOMElements();
+        if (elements) {
+            console.log(`🔧 Re-initializing ${moduleType} section functionality`);
+            if (moduleType === 'image') {
+                initializeImageSection(elements);
+            } else if (moduleType === 'video') {
+                initializeVideoSection(elements);
+            } else if (moduleType === 'audio') {
+                initializeAudioSection(elements);
+            }
+        } else {
+            console.error('Failed to get DOM elements for re-initialization');
+        }
+    } else {
+        console.error(`Failed to load content for ${moduleType} section`);
+    }
+    
+    // Update current section state
+    LabState.currentSection = moduleType;
+    
+    // Smooth scroll to top
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function showModulesView() {
+    const modulesContainer = document.querySelector('.modules-container');
+    const analysisDetailView = document.getElementById('analysisDetailView');
+    
+    if (!modulesContainer || !analysisDetailView) return;
+    
+    // Show modules view
+    modulesContainer.classList.remove('hidden');
+    
+    // Hide detail view
+    analysisDetailView.classList.add('hidden');
+    
+    // Smooth scroll to top
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
 function getDOMElements() {
+    // Look for elements in the detail view first, then fallback to document
+    const detailContent = document.querySelector('.detail-content');
+    const searchContext = detailContent && !detailContent.classList.contains('hidden') ? detailContent : document;
+    
     const elements = {
         // Navigation
         navItems: document.querySelectorAll('.nav-item'),
@@ -63,46 +177,46 @@ function getDOMElements() {
             audio: document.getElementById('audioSection')
         },
         
-        // File inputs
-        imageInput: document.getElementById('imageInput'),
-        videoInput: document.getElementById('videoInput'),
-        audioInput: document.getElementById('audioInput'),
+        // File inputs - search in context
+        imageInput: searchContext.querySelector('#imageInput') || document.getElementById('imageInput'),
+        videoInput: searchContext.querySelector('#videoInput') || document.getElementById('videoInput'),
+        audioInput: searchContext.querySelector('#audioInput') || document.getElementById('audioInput'),
         
-        // Upload areas
-        imageUploadArea: document.getElementById('imageUploadArea'),
-        videoUploadArea: document.getElementById('videoUploadArea'),
-        audioUploadArea: document.getElementById('audioUploadArea'),
+        // Upload areas - search in context
+        imageUploadArea: searchContext.querySelector('#imageUploadArea') || document.getElementById('imageUploadArea'),
+        videoUploadArea: searchContext.querySelector('#videoUploadArea') || document.getElementById('videoUploadArea'),
+        audioUploadArea: searchContext.querySelector('#audioUploadArea') || document.getElementById('audioUploadArea'),
         
-        // Preview areas
-        imagePreviewArea: document.getElementById('imagePreviewArea'),
-        videoPreviewArea: document.getElementById('videoPreviewArea'),
-        audioPreviewArea: document.getElementById('audioPreviewArea'),
+        // Preview areas - search in context
+        imagePreviewArea: searchContext.querySelector('#imagePreviewArea') || document.getElementById('imagePreviewArea'),
+        videoPreviewArea: searchContext.querySelector('#videoPreviewArea') || document.getElementById('videoPreviewArea'),
+        audioPreviewArea: searchContext.querySelector('#audioPreviewArea') || document.getElementById('audioPreviewArea'),
         
-        // Preview elements
-        imagePreview: document.getElementById('imagePreview'),
-        videoPreview: document.getElementById('videoPreview'),
-        audioPreview: document.getElementById('audioPreview'),
+        // Preview elements - search in context
+        imagePreview: searchContext.querySelector('#imagePreview') || document.getElementById('imagePreview'),
+        videoPreview: searchContext.querySelector('#videoPreview') || document.getElementById('videoPreview'),
+        audioPreview: searchContext.querySelector('#audioPreview') || document.getElementById('audioPreview'),
         
-        // Action buttons
-        analyzeImageBtn: document.getElementById('analyzeImageBtn'),
-        analyzeVideoBtn: document.getElementById('analyzeVideoBtn'),
-        analyzeAudioBtn: document.getElementById('analyzeAudioBtn'),
-        clearImageBtn: document.getElementById('clearImageBtn'),
-        clearVideoBtn: document.getElementById('clearVideoBtn'),
-        clearAudioBtn: document.getElementById('clearAudioBtn'),
+        // Action buttons - search in context
+        analyzeImageBtn: searchContext.querySelector('#analyzeImageBtn') || document.getElementById('analyzeImageBtn'),
+        analyzeVideoBtn: searchContext.querySelector('#analyzeVideoBtn') || document.getElementById('analyzeVideoBtn'),
+        analyzeAudioBtn: searchContext.querySelector('#analyzeAudioBtn') || document.getElementById('analyzeAudioBtn'),
+        clearImageBtn: searchContext.querySelector('#clearImageBtn') || document.getElementById('clearImageBtn'),
+        clearVideoBtn: searchContext.querySelector('#clearVideoBtn') || document.getElementById('clearVideoBtn'),
+        clearAudioBtn: searchContext.querySelector('#clearAudioBtn') || document.getElementById('clearAudioBtn'),
         
-        // History elements
-        imageHistory: document.getElementById('imageHistory'),
-        videoHistory: document.getElementById('videoHistory'),
-        audioHistory: document.getElementById('audioHistory'),
-        imageHistoryFilter: document.getElementById('imageHistoryFilter'),
-        videoHistoryFilter: document.getElementById('videoHistoryFilter'),
-        audioHistoryFilter: document.getElementById('audioHistoryFilter'),
+        // History elements - search in context
+        imageHistory: searchContext.querySelector('#imageHistory') || document.getElementById('imageHistory'),
+        videoHistory: searchContext.querySelector('#videoHistory') || document.getElementById('videoHistory'),
+        audioHistory: searchContext.querySelector('#audioHistory') || document.getElementById('audioHistory'),
+        imageHistoryFilter: searchContext.querySelector('#imageHistoryFilter') || document.getElementById('imageHistoryFilter'),
+        videoHistoryFilter: searchContext.querySelector('#videoHistoryFilter') || document.getElementById('videoHistoryFilter'),
+        audioHistoryFilter: searchContext.querySelector('#audioHistoryFilter') || document.getElementById('audioHistoryFilter'),
         
-        // Clear history buttons
-        clearImageHistory: document.getElementById('clearImageHistory'),
-        clearVideoHistory: document.getElementById('clearVideoHistory'),
-        clearAudioHistory: document.getElementById('clearAudioHistory'),
+        // Clear history buttons - search in context
+        clearImageHistory: searchContext.querySelector('#clearImageHistory') || document.getElementById('clearImageHistory'),
+        clearVideoHistory: searchContext.querySelector('#clearVideoHistory') || document.getElementById('clearVideoHistory'),
+        clearAudioHistory: searchContext.querySelector('#clearAudioHistory') || document.getElementById('clearAudioHistory'),
         
         // Statistics
         totalAnalyses: document.getElementById('totalAnalyses'),
@@ -126,8 +240,18 @@ function getDOMElements() {
         newAnalysis: document.getElementById('newAnalysis')
     };
     
+    // Debug: Check which elements were found
+    console.log('🔍 DOM Elements found:', {
+        imageInput: !!elements.imageInput,
+        videoInput: !!elements.videoInput,
+        audioInput: !!elements.audioInput,
+        imageUploadArea: !!elements.imageUploadArea,
+        analyzeImageBtn: !!elements.analyzeImageBtn,
+        searchContext: searchContext === document ? 'document' : 'detailContent'
+    });
+    
     // Check if required elements exist
-    if (!elements.navItems.length) {
+    if (!elements.navItems.length && searchContext === document) {
         console.error('Required DOM elements not found');
         return null;
     }
@@ -659,18 +783,10 @@ function updateStatistics(elements) {
     elements.videoBadge.textContent = LabState.analysisHistory.video.length;
     elements.audioBadge.textContent = LabState.analysisHistory.audio.length;
     
-    // Add accuracy display if it doesn't exist
-    if (!document.getElementById('accuracyStat')) {
-        const accuracyDiv = document.createElement('div');
-        accuracyDiv.className = 'stat-item';
-        accuracyDiv.id = 'accuracyStat';
-        accuracyDiv.innerHTML = `
-            <div class="stat-value" id="accuracyValue">${accuracy}${accuracy !== 'N/A' ? '%' : ''}</div>
-            <div class="stat-label">AI Accuracy</div>
-        `;
-        elements.fakeDetected.parentElement.parentElement.appendChild(accuracyDiv);
-    } else {
-        document.getElementById('accuracyValue').textContent = `${accuracy}${accuracy !== 'N/A' ? '%' : ''}`;
+    // Update accuracy display
+    const accuracyElement = document.getElementById('accuracyValue');
+    if (accuracyElement) {
+        accuracyElement.textContent = `${accuracy}${accuracy !== 'N/A' ? '%' : ''}`;
     }
 }
 
