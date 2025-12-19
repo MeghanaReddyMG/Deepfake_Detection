@@ -27,7 +27,12 @@ class Config:
     @staticmethod
     def init_app(app):
         """Initialize application with config"""
-        # Ensure upload directories exist
-        os.makedirs(Config.UPLOAD_FOLDER, exist_ok=True)
-        os.makedirs(Config.TEMP_FOLDER, exist_ok=True)
+        try:
+            # Only create directories if not in serverless environment
+            if not os.environ.get('VERCEL') and not os.environ.get('AWS_LAMBDA_FUNCTION_NAME'):
+                # Ensure upload directories exist
+                os.makedirs(Config.UPLOAD_FOLDER, exist_ok=True)
+                os.makedirs(Config.TEMP_FOLDER, exist_ok=True)
+        except Exception as e:
+            print(f"Directory creation skipped in serverless environment: {e}")
     

@@ -11,19 +11,39 @@ from config import Config
 
 def create_app():
     app = Flask(__name__)
-    app.config.from_object(Config)
     
-    # Initialize config
-    Config.init_app(app)
+    try:
+        app.config.from_object(Config)
+        # Initialize config safely for serverless
+        try:
+            Config.init_app(app)
+        except Exception as e:
+            print(f"Config initialization warning: {e}")
+            # Continue without directory creation in serverless
+    except Exception as e:
+        print(f"Config loading error: {e}")
+        # Set minimal config
+        app.config['SECRET_KEY'] = 'fallback-secret-key'
     
     # Use lightweight routes for serverless deployment
     try:
-        from routes_lite import main_bp
+        from app.routes_lite import main_bp
         print("Using lightweight routes for serverless deployment")
     except ImportError:
         # Fallback to full routes if available
-        from routes import main_bp
-        print("Using full routes")
+        try:
+            from app.routes import main_bp
+            print("Using full routes")
+        except ImportError:
+            # Create a minimal blueprint if nothing else works
+            from flask import Blueprint
+            main_bp = Blueprint('main', __name__)
+            
+            @main_bp.route('/')
+            def index():
+                return {'status': 'FalsifyX Lite', 'message': 'Minimal deployment active'}
+            
+            print("Using minimal fallback routes")
     
     # Register blueprints
     app.register_blueprint(main_bp)
