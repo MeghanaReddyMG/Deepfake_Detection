@@ -61,57 +61,56 @@ echo "python-3.11.7" > .heroku/python-version
 pip install --no-deps -r requirements.txt
 ```
 
-### 4. **Docker: OpenCV Installation Failed**
+### 4. **Docker: Python Package Installation Failed**
 
 **Error:**
 ```
-Could not build wheels for opencv-python
-Package 'libatlas-base-dev' has no installation candidate
-Package 'libtbb2' has no installation candidate
-Unable to locate package libdc1394-22-dev
+RUN pip install --no-cache-dir -r requirements.txt
+ERROR: failed to build: process did not complete successfully: exit code: 1
 ```
 
 **Solution:**
-Use the updated Dockerfile with correct package names:
+Use Docker-optimized requirements and multi-stage build:
 
-```dockerfile
-# Install system dependencies with modern package names
-RUN apt-get update && apt-get install -y \
-    build-essential \
-    cmake \
-    pkg-config \
-    libopencv-dev \
-    libboost-all-dev \
-    libgtk-3-dev \
-    libavcodec-dev \
-    libavformat-dev \
-    libswscale-dev \
-    libv4l-dev \
-    libxvidcore-dev \
-    libx264-dev \
-    libjpeg-dev \
-    libpng-dev \
-    libtiff-dev \
-    gfortran \
-    libopenblas-dev \
-    liblapack-dev \
-    libblas-dev \
-    python3-dev \
-    libtbb12 \
-    libtbb-dev \
-    libopenexr-dev \
-    libgstreamer-plugins-base1.0-dev \
-    libgstreamer1.0-dev \
-    ffmpeg \
-    wget \
-    && rm -rf /var/lib/apt/lists/*
+**Option 1: Use Docker-optimized requirements**
+```bash
+# Build with Docker-optimized requirements
+docker build -t falsifyx .
+
+# The Dockerfile now uses requirements-docker.txt which excludes:
+# - dlib (replaced with OpenCV face detection)
+# - Heavy development packages (jupyter, notebook, etc.)
+# - Uses tensorflow-cpu instead of full tensorflow
 ```
 
-**Package Replacements:**
-- `libatlas-base-dev` → `libopenblas-dev` + `liblapack-dev` + `libblas-dev`
-- `libtbb2` → `libtbb12` (newer version)
-- `libdc1394-22-dev` → Removed (not needed for most use cases)
-- `openexr` → Removed (use `libopenexr-dev` instead)
+**Option 2: Multi-stage build (recommended)**
+```bash
+# Use the optimized multi-stage Dockerfile
+docker build -f Dockerfile.multistage -t falsifyx .
+```
+
+**Key Docker Optimizations:**
+- `tensorflow-cpu` instead of `tensorflow` (smaller, no GPU deps)
+- `opencv-python-headless` for server environments
+- Removed `dlib` (use OpenCV face detection instead)
+- Removed development packages (`jupyter`, `notebook`, etc.)
+- Multi-stage build separates build and runtime dependencies
+- Uses `wsgi_lite.py` entry point for lighter Docker containers
+
+**Package Replacements for Docker:**
+- `tensorflow` → `tensorflow-cpu`
+- `dlib` → Removed (use OpenCV alternatives)
+- `jupyter` + `notebook` → Removed (development only)
+- `seaborn` + `plotly` → Removed (visualization not needed in production)
+
+**If build still fails, try:**
+```bash
+# Build with more memory
+docker build --memory=4g -t falsifyx .
+
+# Or use pre-built wheels
+docker build --build-arg PIP_EXTRA_INDEX_URL=https://download.pytorch.org/whl/cpu -t falsifyx .
+```
 
 ### 5. **Railway: Memory Limit Exceeded**
 
@@ -471,6 +470,11 @@ pip install -r requirements.txt
 # Test deployment locally
 export FLASK_ENV=production
 gunicorn wsgi:app --bind 127.0.0.1:5000
+
+# Docker build commands
+docker build -t falsifyx .                    # Standard build
+docker build -f Dockerfile.multistage -t falsifyx .  # Multi-stage build
+docker run -p 5000:5000 falsifyx             # Run container
 ```
 
 ---

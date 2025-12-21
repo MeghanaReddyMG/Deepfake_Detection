@@ -4,6 +4,11 @@ FROM python:3.11-slim
 # Set working directory
 WORKDIR /app
 
+# Set environment variables
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
+ENV DEBIAN_FRONTEND=noninteractive
+
 # Install system dependencies
 RUN apt-get update && apt-get install -y \
     build-essential \
@@ -33,13 +38,17 @@ RUN apt-get update && apt-get install -y \
     libgstreamer1.0-dev \
     ffmpeg \
     wget \
+    git \
     && rm -rf /var/lib/apt/lists/*
 
-# Copy requirements first for better caching
-COPY requirements.txt .
+# Upgrade pip and install wheel
+RUN pip install --upgrade pip setuptools wheel
 
-# Install Python dependencies
-RUN pip install --no-cache-dir -r requirements.txt
+# Copy Docker-optimized requirements first for better caching
+COPY requirements-docker.txt .
+
+# Install Python dependencies with better error handling
+RUN pip install --no-cache-dir --timeout=1000 -r requirements-docker.txt
 
 # Copy application code
 COPY . .
@@ -47,14 +56,15 @@ COPY . .
 # Create necessary directories
 RUN mkdir -p static_files/uploads static_files/temp models/face_detection models/blink_detection models/audio_deepfake
 
-# Set environment variables
+# Set environment variables for production
 ENV FLASK_ENV=production
 ENV FLASK_DEBUG=False
 ENV HOST=0.0.0.0
 ENV PORT=5000
+ENV USE_LITE_VERSION=true
 
 # Expose port
 EXPOSE 5000
 
-# Run the application
-CMD ["gunicorn", "--bind", "0.0.0.0:5000", "--workers", "1", "--timeout", "120", "wsgi:app"]
+# Run the application using the lite version for Docker
+CMD ["gunicorn", "--bind", "0.0.0.0:5000", "--workers", "1", "--timeout", "120", "wsgi_lite:app"]
