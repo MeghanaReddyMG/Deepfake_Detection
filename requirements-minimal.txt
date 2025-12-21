@@ -1,0 +1,19 @@
+# Ultra-minimal requirements for Docker deployment
+flask==2.3.3
+flask-cors==4.0.0
+python-dotenv==1.0.0
+
+# Lightweight ML (no TensorFlow for minimal version)
+scikit-learn==1.3.0
+numpy==1.24.3
+
+# Basic image processing only
+opencv-python-headless==4.8.1.78
+Pillow==10.0.0
+imutils==0.5.4
+
+# File handling
+werkzeug==2.3.7
+
+# Production server
+gunicorn==21.2.0

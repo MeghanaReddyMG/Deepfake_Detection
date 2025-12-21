@@ -61,7 +61,63 @@ echo "python-3.11.7" > .heroku/python-version
 pip install --no-deps -r requirements.txt
 ```
 
-### 4. **Docker: Python Package Installation Failed**
+### 4. **Docker: Image Size Too Large (>4GB)**
+
+**Error:**
+```
+Image of size 5.0 GB exceeded limit of 4.0 GB
+Upgrade your plan to increase the image size limit
+```
+
+**Solution - Ultra-Minimal Build (Recommended for size limits):**
+```bash
+# Use minimal Dockerfile (Alpine-based, ~1.5GB final size)
+docker build -f Dockerfile.minimal -t falsifyx .
+
+# Or optimized multi-stage build (~2GB final size)
+docker build -f Dockerfile.multistage -t falsifyx .
+```
+
+**Size Optimization Strategies:**
+
+1. **Use Alpine Linux base** (`Dockerfile.minimal`):
+   - Alpine packages are 5-10x smaller than Debian
+   - Final image: ~1.5GB vs 5GB
+
+2. **Exclude heavy dependencies**:
+   - No TensorFlow (use `requirements-minimal.txt`)
+   - No audio processing libraries
+   - No development tools
+
+3. **Multi-stage build optimizations**:
+   - Separate build and runtime stages
+   - Remove build tools from final image
+   - Clean up package caches and temp files
+
+4. **Use .dockerignore**:
+   - Excludes models, training data, docs
+   - Reduces build context from ~2GB to ~50MB
+
+**Package Size Comparison:**
+```
+Standard build:     5.0GB (all ML libraries)
+Docker-optimized:   3.5GB (tensorflow-cpu)
+Multi-stage:        2.0GB (optimized runtime)
+Minimal Alpine:     1.5GB (basic functionality only)
+```
+
+**For production deployment with size limits:**
+```bash
+# Build minimal version
+docker build -f Dockerfile.minimal -t falsifyx .
+
+# Verify size
+docker images falsifyx
+
+# Should show ~1.5GB instead of 5GB
+```
+
+### 5. **Docker: Python Package Installation Failed**
 
 **Error:**
 ```
@@ -70,49 +126,22 @@ ERROR: failed to build: process did not complete successfully: exit code: 1
 ```
 
 **Solution:**
-Use Docker-optimized requirements and multi-stage build:
+Use Docker-optimized requirements:
 
-**Option 1: Use Docker-optimized requirements**
 ```bash
-# Build with Docker-optimized requirements
-docker build -t falsifyx .
+# Use minimal requirements (no ML libraries)
+docker build -f Dockerfile.minimal -t falsifyx .
 
-# The Dockerfile now uses requirements-docker.txt which excludes:
-# - dlib (replaced with OpenCV face detection)
-# - Heavy development packages (jupyter, notebook, etc.)
-# - Uses tensorflow-cpu instead of full tensorflow
-```
-
-**Option 2: Multi-stage build (recommended)**
-```bash
-# Use the optimized multi-stage Dockerfile
+# Or Docker-optimized requirements (with tensorflow-cpu)
 docker build -f Dockerfile.multistage -t falsifyx .
 ```
 
-**Key Docker Optimizations:**
-- `tensorflow-cpu` instead of `tensorflow` (smaller, no GPU deps)
-- `opencv-python-headless` for server environments
-- Removed `dlib` (use OpenCV face detection instead)
-- Removed development packages (`jupyter`, `notebook`, etc.)
-- Multi-stage build separates build and runtime dependencies
-- Uses `wsgi_lite.py` entry point for lighter Docker containers
+**Package Installation Strategies:**
+- `requirements-minimal.txt` - Basic web app only (~200MB packages)
+- `requirements-docker.txt` - Includes tensorflow-cpu (~1.5GB packages)
+- `requirements.txt` - Full ML stack (~3GB+ packages)
 
-**Package Replacements for Docker:**
-- `tensorflow` → `tensorflow-cpu`
-- `dlib` → Removed (use OpenCV alternatives)
-- `jupyter` + `notebook` → Removed (development only)
-- `seaborn` + `plotly` → Removed (visualization not needed in production)
-
-**If build still fails, try:**
-```bash
-# Build with more memory
-docker build --memory=4g -t falsifyx .
-
-# Or use pre-built wheels
-docker build --build-arg PIP_EXTRA_INDEX_URL=https://download.pytorch.org/whl/cpu -t falsifyx .
-```
-
-### 5. **Railway: Memory Limit Exceeded**
+### 6. **Railway: Memory Limit Exceeded**
 
 **Error:**
 ```
@@ -127,7 +156,7 @@ export FLASK_ENV=production
 export USE_LITE_VERSION=true
 ```
 
-### 6. **Local: Import Errors**
+### 7. **Local: Import Errors**
 
 **Error:**
 ```
