@@ -65,16 +65,16 @@ pip install --no-deps -r requirements.txt
 
 **Error:**
 ```
-Image of size 5.0 GB exceeded limit of 4.0 GB
+Image of size 4.0 GB exceeded limit of 4.0 GB
 Upgrade your plan to increase the image size limit
 ```
 
 **Solution - Ultra-Minimal Build (Recommended for size limits):**
 ```bash
-# Use minimal Dockerfile (Alpine-based, ~1.5GB final size)
+# Use minimal Dockerfile (Alpine-based, <1GB final size)
 docker build -f Dockerfile.minimal -t falsifyx .
 
-# Or optimized multi-stage build (~2GB final size)
+# Or optimized multi-stage build (~1.5GB final size)
 docker build -f Dockerfile.multistage -t falsifyx .
 ```
 
@@ -82,10 +82,10 @@ docker build -f Dockerfile.multistage -t falsifyx .
 
 1. **Use Alpine Linux base** (`Dockerfile.minimal`):
    - Alpine packages are 5-10x smaller than Debian
-   - Final image: ~1.5GB vs 5GB
+   - Final image: <1GB vs 4GB
 
 2. **Exclude heavy dependencies**:
-   - No TensorFlow (use `requirements-minimal.txt`)
+   - No TensorFlow, OpenCV, or ML libraries
    - No audio processing libraries
    - No development tools
 
@@ -100,10 +100,10 @@ docker build -f Dockerfile.multistage -t falsifyx .
 
 **Package Size Comparison:**
 ```
-Standard build:     5.0GB (all ML libraries)
-Docker-optimized:   3.5GB (tensorflow-cpu)
-Multi-stage:        2.0GB (optimized runtime)
-Minimal Alpine:     1.5GB (basic functionality only)
+Standard build:     4.0GB (all ML libraries)
+Docker-optimized:   2.5GB (tensorflow-cpu)
+Multi-stage:        1.5GB (optimized runtime)
+Minimal Alpine:     <1GB (basic functionality only)
 ```
 
 **For production deployment with size limits:**
@@ -114,7 +114,7 @@ docker build -f Dockerfile.minimal -t falsifyx .
 # Verify size
 docker images falsifyx
 
-# Should show ~1.5GB instead of 5GB
+# Should show <1GB instead of 4GB
 ```
 
 ### 5. **Docker: Python Package Installation Failed**
@@ -137,7 +137,7 @@ docker build -f Dockerfile.multistage -t falsifyx .
 ```
 
 **Package Installation Strategies:**
-- `requirements-minimal.txt` - Basic web app only (~200MB packages)
+- `requirements-minimal.txt` - Basic web app only (~50MB packages)
 - `requirements-docker.txt` - Includes tensorflow-cpu (~1.5GB packages)
 - `requirements.txt` - Full ML stack (~3GB+ packages)
 

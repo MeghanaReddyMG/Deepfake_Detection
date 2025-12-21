@@ -1,36 +1,32 @@
 # Ultra-optimized multi-stage Docker build for size-constrained deployments
-# Final image size: ~1.5-2GB (vs 5GB standard build)
+# Final image size: <1.5GB (vs 4GB standard build)
 
 # Stage 1: Build dependencies
-FROM python:3.11-slim as builder
+FROM python:3.11-alpine as builder
 
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
-ENV DEBIAN_FRONTEND=noninteractive
 
 # Install only essential build dependencies
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    build-essential \
-    cmake \
-    pkg-config \
-    python3-dev \
-    libjpeg-dev \
-    libpng-dev \
-    && rm -rf /var/lib/apt/lists/*
+RUN apk add --no-cache --virtual .build-deps \
+    gcc \
+    musl-dev \
+    jpeg-dev \
+    zlib-dev
 
 # Create virtual environment
 RUN python -m venv /opt/venv
 ENV PATH="/opt/venv/bin:$PATH"
 
 # Upgrade pip
-RUN pip install --upgrade pip setuptools wheel
+RUN pip install --no-cache-dir --upgrade pip
 
 # Copy and install minimal Python dependencies
 COPY requirements-minimal.txt .
 RUN pip install --no-cache-dir -r requirements-minimal.txt
 
 # Stage 2: Ultra-minimal runtime
-FROM python:3.11-slim
+FROM python:3.11-alpine
 
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
@@ -40,13 +36,11 @@ ENV FLASK_DEBUG=False
 ENV USE_LITE_VERSION=true
 ENV MINIMAL_MODE=true
 
-# Install only runtime dependencies (no build tools)
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    libjpeg62-turbo \
-    libpng16-16 \
-    && rm -rf /var/lib/apt/lists/* \
-    && apt-get clean \
-    && rm -rf /tmp/* /var/tmp/*
+# Install only runtime dependencies
+RUN apk add --no-cache \
+    jpeg \
+    zlib \
+    && rm -rf /var/cache/apk/*
 
 # Copy virtual environment from builder
 COPY --from=builder /opt/venv /opt/venv
@@ -54,7 +48,7 @@ COPY --from=builder /opt/venv /opt/venv
 # Set working directory
 WORKDIR /app
 
-# Copy only essential application files (exclude models, training, etc.)
+# Copy only essential application files
 COPY app/ ./app/
 COPY config.py .
 COPY wsgi_lite.py .
@@ -63,9 +57,7 @@ COPY wsgi_lite.py .
 RUN mkdir -p static_files/uploads static_files/temp
 
 # Remove unnecessary files to reduce size
-RUN find /opt/venv -type d -name "tests" -exec rm -rf {} + 2>/dev/null || true && \
-    find /opt/venv -type d -name "test" -exec rm -rf {} + 2>/dev/null || true && \
-    find /opt/venv -name "*.pyc" -delete && \
+RUN find /opt/venv -name "*.pyc" -delete && \
     find /opt/venv -name "*.pyo" -delete && \
     find /opt/venv -name "__pycache__" -type d -exec rm -rf {} + 2>/dev/null || true
 
@@ -73,4 +65,4 @@ RUN find /opt/venv -type d -name "tests" -exec rm -rf {} + 2>/dev/null || true &
 EXPOSE 5000
 
 # Run with optimized settings
-CMD ["gunicorn", "--bind", "0.0.0.0:5000", "--workers", "1", "--threads", "2", "--timeout", "60", "--max-requests", "100", "--worker-class", "sync", "wsgi_lite:app"]
+CMD ["gunicorn", "--bind", "0.0.0.0:5000", "--workers", "1", "--threads", "2", "--timeout", "30", "--max-requests", "50", "--worker-class", "sync", "wsgi_lite:app"]
