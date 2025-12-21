@@ -3,7 +3,7 @@ builder = "dockerfile"
 dockerfilePath = "Dockerfile.minimal"
 
 [deploy]
-startCommand = "gunicorn --bind 0.0.0.0:$PORT --workers 1 --timeout 30 wsgi_lite:app"
+startCommand = "./start.sh"
 restartPolicyType = "on_failure"
 restartPolicyMaxRetries = 3
 
@@ -12,4 +12,3 @@ FLASK_ENV = "production"
 FLASK_DEBUG = "False"
 USE_LITE_VERSION = "true"
 MINIMAL_MODE = "true"
-PORT = "8000"

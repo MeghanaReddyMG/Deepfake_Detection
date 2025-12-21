@@ -61,8 +61,12 @@ RUN find /opt/venv -name "*.pyc" -delete && \
     find /opt/venv -name "*.pyo" -delete && \
     find /opt/venv -name "__pycache__" -type d -exec rm -rf {} + 2>/dev/null || true
 
-# Expose port
-EXPOSE 5000
+# Copy startup script
+COPY start.sh .
+RUN chmod +x start.sh
 
-# Run with optimized settings
-CMD ["gunicorn", "--bind", "0.0.0.0:5000", "--workers", "1", "--threads", "2", "--timeout", "30", "--max-requests", "50", "--worker-class", "sync", "wsgi_lite:app"]
+# Expose port
+EXPOSE 8000
+
+# Use startup script to handle PORT environment variable properly
+CMD ["./start.sh"]

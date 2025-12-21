@@ -83,3 +83,6 @@ docker-compose*.yml
 # Requirements files not being used
 requirements.txt
 requirements-vercel.txt
+
+# Keep essential files
+!start.sh
