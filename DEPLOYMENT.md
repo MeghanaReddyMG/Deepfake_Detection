@@ -135,19 +135,73 @@ vercel --prod
 
 ### Railway Deployment
 
+**Railway.app is perfect for the ultra-minimal Docker build (<1GB image size)**
+
 1. **Connect GitHub Repository**
    - Go to [Railway.app](https://railway.app)
    - Connect your GitHub account
    - Select the falsifyx repository
 
-2. **Configure Environment Variables**
+2. **Configure Deployment Settings**
+   ```bash
+   # Railway will auto-detect Dockerfile, but you can specify:
+   # Use Dockerfile.minimal for size-constrained deployments
+   ```
+
+3. **Set Environment Variables in Railway Dashboard**
    ```
    FLASK_ENV=production
    SECRET_KEY=your-secret-key
    FLASK_DEBUG=False
+   USE_LITE_VERSION=true
+   MINIMAL_MODE=true
+   PORT=5000
    ```
 
-3. **Deploy automatically via Git push**
+4. **Deploy Options**
+   
+   **Option A: Automatic Deployment (Recommended)**
+   - Railway auto-deploys on git push to main branch
+   - Uses `Dockerfile` by default (2-3GB image)
+   
+   **Option B: Minimal Size Deployment**
+   - Create `railway.toml` in project root:
+   ```toml
+   [build]
+   builder = "dockerfile"
+   dockerfilePath = "Dockerfile.minimal"
+   
+   [deploy]
+   startCommand = "gunicorn --bind 0.0.0.0:$PORT wsgi_lite:app"
+   ```
+
+5. **Railway Advantages**
+   - **4GB image size limit** - Perfect for our minimal build (<1GB)
+   - **Automatic HTTPS** - Built-in SSL certificates
+   - **Custom domains** - Easy domain configuration
+   - **Auto-scaling** - Handles traffic spikes
+   - **Zero-config deployment** - Just connect and deploy
+
+6. **Deployment Commands**
+   ```bash
+   # Push to trigger deployment
+   git push origin main
+   
+   # Or use Railway CLI
+   npm install -g @railway/cli
+   railway login
+   railway deploy
+   ```
+
+7. **Monitor Deployment**
+   - View build logs in Railway dashboard
+   - Check application logs for any issues
+   - Test the deployed URL
+
+**Railway Deployment Sizes:**
+- `Dockerfile.minimal`: <1GB ✅ (Recommended for Railway)
+- `Dockerfile.multistage`: ~1.5GB ✅ (Also works)
+- `Dockerfile`: 2-3GB ✅ (Standard build, still under 4GB limit)
 
 ### DigitalOcean App Platform
 

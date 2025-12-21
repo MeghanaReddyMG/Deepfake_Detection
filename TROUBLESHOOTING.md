@@ -146,15 +146,30 @@ docker build -f Dockerfile.multistage -t falsifyx .
 **Error:**
 ```
 Process killed due to memory limit (512MB)
+Image size exceeded limit
 ```
 
 **Solution:**
 ```bash
-# Upgrade Railway plan or optimize memory usage
-# Use lightweight version for demo
-export FLASK_ENV=production
-export USE_LITE_VERSION=true
+# Use minimal Docker build for Railway
+# railway.toml is configured to use Dockerfile.minimal
+
+# Verify Railway deployment settings:
+# - Uses Dockerfile.minimal (<1GB image)
+# - Sets MINIMAL_MODE=true
+# - Uses wsgi_lite.py entry point
+# - Single worker configuration
+
+# Railway deployment commands:
+git push origin main  # Auto-deploys
+# Or: railway deploy (with Railway CLI)
 ```
+
+**Railway Optimization:**
+- **Image size**: <1GB (well under Railway's 4GB limit)
+- **Memory usage**: ~200MB (under Railway's 512MB default)
+- **Startup time**: <30 seconds (Railway timeout: 60s)
+- **Auto-scaling**: Handles traffic spikes automatically
 
 ### 7. **Local: Import Errors**
 
