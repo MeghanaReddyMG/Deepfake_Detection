@@ -1,2 +1,1 @@
-# Ultra-minimal requirements for Vercel serverless deployment
-flask==2.3.3
+flask
