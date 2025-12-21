@@ -1,35 +1,34 @@
-from flask import Flask
+"""
+WSGI entry point for production deployment (Railway, Heroku, etc.)
+Lightweight version for serverless and containerized deployments
+"""
+import os
+import sys
 
-app = Flask(__name__)
+# Add project root to path
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
-@app.route('/')
-def hello():
-    return '''
-    <!DOCTYPE html>
-    <html>
-    <head>
-        <title>FalsifyX</title>
-        <style>
-            body { font-family: Arial; margin: 40px; background: #f0f0f0; }
-            .container { max-width: 600px; margin: 0 auto; background: white; padding: 40px; border-radius: 10px; }
-            h1 { color: #333; text-align: center; }
-            .status { background: #4CAF50; color: white; padding: 15px; border-radius: 5px; text-align: center; }
-        </style>
-    </head>
-    <body>
-        <div class="container">
-            <h1>🔍 FalsifyX</h1>
-            <div class="status">✅ System Online</div>
-            <p>AI-Powered Deepfake Detection System</p>
-            <p>This is a serverless deployment running on Vercel.</p>
-        </div>
-    </body>
-    </html>
-    '''
+# Import the lite application
+from app.main_lite import create_app
 
-@app.route('/health')
-def health():
-    return {'status': 'ok', 'service': 'falsifyx'}
+# Create the application instance
+app = create_app()
 
-# This is required for Vercel
+# Configure for production
+app.config['ENV'] = 'production'
+app.config['DEBUG'] = False
+
+# Railway and other platforms provide PORT via environment variable
+# Gunicorn will handle the port binding, but we ensure it's available
+port = int(os.environ.get('PORT', 5000))
+
+# This is the WSGI application object that gunicorn will use
 application = app
+
+if __name__ == '__main__':
+    # This won't be called in production (gunicorn handles it)
+    # But useful for local testing
+    host = os.environ.get('HOST', '0.0.0.0')
+    debug_mode = os.environ.get('FLASK_DEBUG', 'False').lower() == 'true'
+    
+    app.run(debug=debug_mode, host=host, port=port)
