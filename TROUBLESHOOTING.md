@@ -2,7 +2,22 @@
 
 ## 🚨 Common Deployment Errors & Solutions
 
-### 1. **Vercel: dlib-bin Compatibility Error**
+### 1. **Linux: Missing System Dependencies (libatlas-base-dev/libtbb2)**
+
+**Error:**
+```
+Package libatlas-base-dev is not available
+Package libtbb2 is not available
+```
+
+**Quick Fix:**
+```bash
+sudo apt-get update
+sudo apt-get install -y libatlas3-base libatlas-base-dev libtbbmalloc2 libtbb-dev
+# Then: pip install -r requirements.txt
+```
+
+### 2. **Vercel: dlib-bin Compatibility Error**
 
 **Error:**
 ```
@@ -26,7 +41,7 @@ pip install -r requirements-vercel.txt
 - `wsgi_lite.py` (serverless entry point)
 - `vercel.json` (Vercel configuration)
 
-### 2. **Heroku: Slug Size Too Large**
+### 3. **Heroku: Slug Size Too Large**
 
 **Error:**
 ```
@@ -46,7 +61,7 @@ echo "python-3.11.7" > .heroku/python-version
 pip install --no-deps -r requirements.txt
 ```
 
-### 3. **Docker: OpenCV Installation Failed**
+### 4. **Docker: OpenCV Installation Failed**
 
 **Error:**
 ```
@@ -64,7 +79,7 @@ RUN apt-get update && apt-get install -y \
     build-essential
 ```
 
-### 4. **Railway: Memory Limit Exceeded**
+### 5. **Railway: Memory Limit Exceeded**
 
 **Error:**
 ```
@@ -79,7 +94,7 @@ export FLASK_ENV=production
 export USE_LITE_VERSION=true
 ```
 
-### 5. **Local: Import Errors**
+### 6. **Local: Import Errors**
 
 **Error:**
 ```
@@ -277,6 +292,63 @@ sudo apt-get install -y \
     build-essential
 
 # Install Python packages
+pip install -r requirements.txt
+```
+
+### **Linux: Missing libatlas-base-dev / libtbb2 Error**
+
+**Error:**
+```
+Package libatlas-base-dev is not available, but is referred to by another package.
+Package libtbb2 is not available, but is referred to by another package.
+However the following packages replace it: libtbbmalloc2
+```
+
+**Solution:**
+```bash
+# Update package lists
+sudo apt-get update
+
+# Install replacement packages
+sudo apt-get install -y \
+    libatlas3-base \
+    libatlas-base-dev \
+    libtbbmalloc2 \
+    libtbb-dev \
+    liblapack-dev \
+    libblas-dev \
+    gfortran
+
+# Alternative: Install OpenBLAS instead of ATLAS
+sudo apt-get install -y \
+    libopenblas-dev \
+    liblapack-dev
+
+# For newer Ubuntu versions (20.04+), use:
+sudo apt-get install -y \
+    libtbb2 \
+    libtbb-dev
+
+# If packages still not found, enable universe repository
+sudo add-apt-repository universe
+sudo apt-get update
+sudo apt-get install -y libatlas-base-dev libtbb2
+
+# Install OpenCV system dependencies
+sudo apt-get install -y \
+    libgtk-3-dev \
+    libavcodec-dev \
+    libavformat-dev \
+    libswscale-dev \
+    libv4l-dev \
+    libxvidcore-dev \
+    libx264-dev \
+    libjpeg-dev \
+    libpng-dev \
+    libtiff-dev \
+    libdc1394-22-dev
+
+# Then install Python packages
 pip install -r requirements.txt
 ```
 
