@@ -65,19 +65,53 @@ pip install --no-deps -r requirements.txt
 
 **Error:**
 ```
-ERROR: Could not build wheels for opencv-python
+Could not build wheels for opencv-python
+Package 'libatlas-base-dev' has no installation candidate
+Package 'libtbb2' has no installation candidate
+Unable to locate package libdc1394-22-dev
 ```
 
 **Solution:**
-Use the provided Dockerfile with system dependencies:
+Use the updated Dockerfile with correct package names:
 
 ```dockerfile
-# Install system dependencies first
+# Install system dependencies with modern package names
 RUN apt-get update && apt-get install -y \
+    build-essential \
+    cmake \
+    pkg-config \
     libopencv-dev \
+    libboost-all-dev \
+    libgtk-3-dev \
+    libavcodec-dev \
+    libavformat-dev \
+    libswscale-dev \
+    libv4l-dev \
+    libxvidcore-dev \
+    libx264-dev \
+    libjpeg-dev \
+    libpng-dev \
+    libtiff-dev \
+    gfortran \
+    libopenblas-dev \
+    liblapack-dev \
+    libblas-dev \
     python3-dev \
-    build-essential
+    libtbb12 \
+    libtbb-dev \
+    libopenexr-dev \
+    libgstreamer-plugins-base1.0-dev \
+    libgstreamer1.0-dev \
+    ffmpeg \
+    wget \
+    && rm -rf /var/lib/apt/lists/*
 ```
+
+**Package Replacements:**
+- `libatlas-base-dev` → `libopenblas-dev` + `liblapack-dev` + `libblas-dev`
+- `libtbb2` → `libtbb12` (newer version)
+- `libdc1394-22-dev` → Removed (not needed for most use cases)
+- `openexr` → Removed (use `libopenexr-dev` instead)
 
 ### 5. **Railway: Memory Limit Exceeded**
 

@@ -8,6 +8,7 @@ WORKDIR /app
 RUN apt-get update && apt-get install -y \
     build-essential \
     cmake \
+    pkg-config \
     libopencv-dev \
     libboost-all-dev \
     libgtk-3-dev \
@@ -21,16 +22,17 @@ RUN apt-get update && apt-get install -y \
     libpng-dev \
     libtiff-dev \
     gfortran \
-    openexr \
-    libatlas-base-dev \
+    libopenblas-dev \
+    liblapack-dev \
+    libblas-dev \
     python3-dev \
-    libtbb2 \
+    libtbb12 \
     libtbb-dev \
-    libdc1394-22-dev \
     libopenexr-dev \
     libgstreamer-plugins-base1.0-dev \
     libgstreamer1.0-dev \
     ffmpeg \
+    wget \
     && rm -rf /var/lib/apt/lists/*
 
 # Copy requirements first for better caching
