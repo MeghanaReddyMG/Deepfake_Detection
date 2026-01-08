@@ -2,8 +2,10 @@
 flask==2.3.3
 python-dotenv==1.0.0
 
-# Minimal image processing only
+# Image processing and analysis
 Pillow==10.0.0
+numpy==1.24.3
+scipy==1.11.1
 
 # File handling
 werkzeug==2.3.7

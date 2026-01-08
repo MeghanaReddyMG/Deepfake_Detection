@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Simple Upload Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; }
+        .form-group { margin: 20px 0; }
+        input[type="file"] { margin: 10px 0; }
+        button { padding: 10px 20px; background: #007bff; color: white; border: none; cursor: pointer; }
+        .result { margin: 20px 0; padding: 20px; border: 1px solid #ccc; background: #f9f9f9; }
+    </style>
+</head>
+<body>
+    <h1>Simple Upload Test</h1>
+    
+    <div class="form-group">
+        <h3>Test Upload (No Login Required)</h3>
+        <form action="/test_upload" method="post" enctype="multipart/form-data">
+            <input type="file" name="file" accept="image/*,video/*,audio/*" required>
+            <br>
+            <button type="submit">Test Upload</button>
+        </form>
+    </div>
+    
+    <div class="form-group">
+        <h3>Real Upload (Login Required)</h3>
+        <form action="/upload" method="post" enctype="multipart/form-data">
+            <input type="file" name="file" accept="image/*,video/*,audio/*" required>
+            <br>
+            <button type="submit">Real Upload</button>
+        </form>
+    </div>
+    
+    <div class="form-group">
+        <h3>JavaScript Test</h3>
+        <input type="file" id="jsFile" accept="image/*,video/*,audio/*">
+        <button onclick="testJS()">JS Upload</button>
+        <div id="jsResult"></div>
+    </div>
+    
+    <script>
+        function testJS() {
+            const fileInput = document.getElementById('jsFile');
+            const file = fileInput.files[0];
+            
+            if (!file) {
+                alert('Please select a file');
+                return;
+            }
+            
+            const formData = new FormData();
+            formData.append('file', file);
+            
+            fetch('/test_upload', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('jsResult').innerHTML = 
+                    '<div class="result">JS Result: ' + JSON.stringify(data, null, 2) + '</div>';
+            })
+            .catch(error => {
+                document.getElementById('jsResult').innerHTML = 
+                    '<div class="result">JS Error: ' + error.message + '</div>';
+            });
+        }
+    </script>
+</body>
+</html>

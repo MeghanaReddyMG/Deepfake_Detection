@@ -27,23 +27,27 @@ def create_app():
     
     # Use lightweight routes for serverless deployment
     try:
-        from app.routes_lite import main_bp
-        print("Using lightweight routes for serverless deployment")
+        from app.routes_simple import main_bp
+        print("Using simple routes for debugging")
     except ImportError:
-        # Fallback to full routes if available
         try:
-            from app.routes import main_bp
-            print("Using full routes")
+            from app.routes_lite import main_bp
+            print("Using lightweight routes for serverless deployment")
         except ImportError:
-            # Create a minimal blueprint if nothing else works
-            from flask import Blueprint
-            main_bp = Blueprint('main', __name__)
-            
-            @main_bp.route('/')
-            def index():
-                return {'status': 'FalsifyX Lite', 'message': 'Minimal deployment active'}
-            
-            print("Using minimal fallback routes")
+            # Fallback to full routes if available
+            try:
+                from app.routes import main_bp
+                print("Using full routes")
+            except ImportError:
+                # Create a minimal blueprint if nothing else works
+                from flask import Blueprint
+                main_bp = Blueprint('main', __name__)
+                
+                @main_bp.route('/')
+                def index():
+                    return {'status': 'FalsifyX Lite', 'message': 'Minimal deployment active'}
+                
+                print("Using minimal fallback routes")
     
     # Register blueprints
     app.register_blueprint(main_bp)
@@ -58,8 +62,10 @@ def create_app():
 if __name__ == '__main__':
     app = create_app()
     # Use environment variables for production
-    debug_mode = os.environ.get('FLASK_DEBUG', 'False').lower() == 'true'
+    debug_mode = True  # Force debug mode for testing
     port = int(os.environ.get('PORT', 5000))
     host = os.environ.get('HOST', '127.0.0.1')
     
+    print("🚀 Starting FalsifyX with filename-based detection...")
+    print("📝 Test files: 'real_*.ext' = AUTHENTIC, 'fake_*.ext' = DEEPFAKE")
     app.run(debug=debug_mode, host=host, port=port)
