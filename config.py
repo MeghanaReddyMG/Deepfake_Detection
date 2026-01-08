@@ -1,4 +1,5 @@
 import os
+from datetime import timedelta
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -6,6 +7,12 @@ load_dotenv()
 class Config:
     # Security
     SECRET_KEY = os.getenv('SECRET_KEY', 'default-secret-key-change-in-production')
+    
+    # Session configuration
+    PERMANENT_SESSION_LIFETIME = timedelta(days=30)  # Remember me for 30 days
+    SESSION_COOKIE_SECURE = os.getenv('FLASK_ENV', 'development') == 'production'
+    SESSION_COOKIE_HTTPONLY = True
+    SESSION_COOKIE_SAMESITE = 'Lax'
     
     # File handling
     BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -20,8 +27,8 @@ class Config:
     
     # Authentication (remove in production, use proper database)
     USERS = {
-        'admin': 'admin123',
-        'user': 'demo123'
+        'admin': 'Admin123!',  # Updated: 8 chars, uppercase, lowercase, number, special
+        'user': 'Demo123!'     # Updated: 8 chars, uppercase, lowercase, number, special
     }
     
     @staticmethod

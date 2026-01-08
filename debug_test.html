@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Debug Detection Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .test-result { margin: 20px 0; padding: 15px; border: 2px solid #ccc; }
+        .fake { background: #ffebee; border-color: #f44336; }
+        .real { background: #e8f5e8; border-color: #4caf50; }
+        .debug { background: #f5f5f5; padding: 10px; margin: 10px 0; font-family: monospace; }
+    </style>
+</head>
+<body>
+    <h1>FalsifyX Detection Debug Test</h1>
+    
+    <div>
+        <input type="file" id="testFile" accept="image/*,video/*,audio/*">
+        <button onclick="testDetection()">Test Detection Logic</button>
+    </div>
+    
+    <div id="results"></div>
+    
+    <script>
+        function testDetection() {
+            const file = document.getElementById('testFile').files[0];
+            if (!file) {
+                alert('Please select a file first');
+                return;
+            }
+            
+            console.log('🧪 Starting detection test...');
+            
+            const formData = new FormData();
+            formData.append('file', file);
+            
+            fetch('/upload', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('📥 Backend response:', data);
+                
+                // Test the detection logic step by step
+                const results = data.results;
+                console.log('🔍 Raw results:', results);
+                
+                // Simulate processAnalysisResults logic
+                if (Array.isArray(results)) {
+                    const hasVideoData = results.some(item => item.frame !== undefined || item.video_summary);
+                    const hasImageData = results.some(item => item.image_summary || item.type === 'ai_detection');
+                    
+                    console.log('📊 Data type check:', { hasVideoData, hasImageData });
+                    
+                    if (hasImageData) {
+                        const imageResults = results.filter(item => !item.image_summary);
+                        const imageSummary = results.find(item => item.image_summary);
+                        
+                        console.log('🖼️ Image processing:', { imageResults, imageSummary });
+                        
+                        const fakeCount = imageResults.filter(item => 
+                            item.is_fake || item.ai_generated || item.is_ai_generated
+                        ).length;
+                        
+                        const aiGeneratedCount = imageResults.filter(item => 
+                            item.ai_generated || item.is_ai_generated
+                        ).length;
+                        
+                        console.log('🔢 Counts:', { fakeCount, aiGeneratedCount });
+                        
+                        const overallAiScore = imageSummary ? imageSummary.image_summary.ai_generated_likelihood : 0;
+                        
+                        const deepfakeDetected = fakeCount > 0;
+                        const aiGeneratedDetected = aiGeneratedCount > 0 || overallAiScore > 0.4;
+                        const overallFake = deepfakeDetected || aiGeneratedDetected || overallAiScore > 0.4;
+                        
+                        console.log('🎯 Final detection:', {
+                            deepfakeDetected,
+                            aiGeneratedDetected,
+                            overallFake,
+                            overallAiScore
+                        });
+                        
+                        // Display results
+                        const resultDiv = document.getElementById('results');
+                        resultDiv.innerHTML = `
+                            <div class="test-result ${overallFake ? 'fake' : 'real'}">
+                                <h3>${overallFake ? '🚨 FAKE DETECTED' : '✅ AUTHENTIC'}</h3>
+                                <div class="debug">
+                                    <strong>Detection Breakdown:</strong><br>
+                                    • Fake Count: ${fakeCount}<br>
+                                    • AI Generated Count: ${aiGeneratedCount}<br>
+                                    • Overall AI Score: ${overallAiScore}<br>
+                                    • Deepfake Detected: ${deepfakeDetected}<br>
+                                    • AI Generated Detected: ${aiGeneratedDetected}<br>
+                                    • Overall Fake: ${overallFake}
+                                </div>
+                                <div class="debug">
+                                    <strong>Raw Backend Response:</strong><br>
+                                    <pre>${JSON.stringify(data, null, 2)}</pre>
+                                </div>
+                            </div>
+                        `;
+                    }
+                }
+            })
+            .catch(error => {
+                console.error('❌ Error:', error);
+                document.getElementById('results').innerHTML = `
+                    <div class="test-result" style="border-color: red;">
+                        <h3>❌ ERROR</h3>
+                        <p>${error.message}</p>
+                    </div>
+                `;
+            });
+        }
+    </script>
+</body>
+</html>

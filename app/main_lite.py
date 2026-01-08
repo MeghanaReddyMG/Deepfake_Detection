@@ -27,23 +27,27 @@ def create_app():
     
     # Use lightweight routes for serverless deployment
     try:
-        from app.routes_lite import main_bp
-        print("Using lightweight routes for serverless deployment")
+        from app.routes_simple import main_bp
+        print("Using simple routes for debugging")
     except ImportError:
-        # Fallback to full routes if available
         try:
-            from app.routes import main_bp
-            print("Using full routes")
+            from app.routes_lite import main_bp
+            print("Using lightweight routes for serverless deployment")
         except ImportError:
-            # Create a minimal blueprint if nothing else works
-            from flask import Blueprint
-            main_bp = Blueprint('main', __name__)
-            
-            @main_bp.route('/')
-            def index():
-                return {'status': 'FalsifyX Lite', 'message': 'Minimal deployment active'}
-            
-            print("Using minimal fallback routes")
+            # Fallback to full routes if available
+            try:
+                from app.routes import main_bp
+                print("Using full routes")
+            except ImportError:
+                # Create a minimal blueprint if nothing else works
+                from flask import Blueprint
+                main_bp = Blueprint('main', __name__)
+                
+                @main_bp.route('/')
+                def index():
+                    return {'status': 'FalsifyX Lite', 'message': 'Minimal deployment active'}
+                
+                print("Using minimal fallback routes")
     
     # Register blueprints
     app.register_blueprint(main_bp)

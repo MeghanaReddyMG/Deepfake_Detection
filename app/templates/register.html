@@ -17,33 +17,44 @@
         </div>
         <h1>Register</h1>
         
-        {% with messages = get_flashed_messages() %}
+        {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
                 <div class="flash-messages">
-                    {% for message in messages %}
-                        <div class="alert alert-error">{{ message }}</div>
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }}">{{ message }}</div>
                     {% endfor %}
                 </div>
             {% endif %}
         {% endwith %}
         
-        <form method="POST">
+        <form method="POST" id="registerForm">
             <div class="form-group">
                 <label for="username">Username:</label>
-                <input type="text" id="username" name="username" required>
+                <input type="text" id="username" name="username" required minlength="3">
+                <small class="form-help">At least 3 characters</small>
             </div>
             
             <div class="form-group">
                 <label for="password">Password:</label>
-                <input type="password" id="password" name="password" required>
+                <input type="password" id="password" name="password" required minlength="8">
+                <small class="form-help">Must contain: 8+ characters, uppercase (A-Z), lowercase (a-z), number (0-9), and special character (!@#$%^&*()_+-=[]{}|;:,.<>?)</small>
+                <div id="password-requirements" class="password-requirements">
+                    <div class="requirement" id="req-length">✗ At least 8 characters</div>
+                    <div class="requirement" id="req-uppercase">✗ One uppercase letter (A-Z)</div>
+                    <div class="requirement" id="req-lowercase">✗ One lowercase letter (a-z)</div>
+                    <div class="requirement" id="req-number">✗ One number (0-9)</div>
+                    <div class="requirement" id="req-special">✗ One special character</div>
+                </div>
             </div>
             
             <div class="form-group">
                 <label for="confirm_password">Confirm Password:</label>
                 <input type="password" id="confirm_password" name="confirm_password" required>
+                <small class="form-help">Must match the password above</small>
+                <div id="password-match" class="password-match"></div>
             </div>
             
-            <button type="submit" class="btn-primary">Register</button>
+            <button type="submit" class="btn-primary" id="submitBtn">Register</button>
         </form>
         
         <div class="auth-links">
@@ -51,4 +62,176 @@
         </div>
     </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const passwordInput = document.getElementById('password');
+    const confirmPasswordInput = document.getElementById('confirm_password');
+    const passwordMatch = document.getElementById('password-match');
+    const submitBtn = document.getElementById('submitBtn');
+    
+    function validatePassword(password) {
+        const requirements = {
+            length: password.length >= 8,
+            uppercase: /[A-Z]/.test(password),
+            lowercase: /[a-z]/.test(password),
+            number: /[0-9]/.test(password),
+            special: /[!@#$%^&*()_+\-=\[\]{}|;:,.<>?]/.test(password)
+        };
+        
+        return requirements;
+    }
+    
+    function updatePasswordRequirements() {
+        const password = passwordInput.value;
+        const requirements = validatePassword(password);
+        
+        // Update each requirement indicator
+        updateRequirement('req-length', requirements.length);
+        updateRequirement('req-uppercase', requirements.uppercase);
+        updateRequirement('req-lowercase', requirements.lowercase);
+        updateRequirement('req-number', requirements.number);
+        updateRequirement('req-special', requirements.special);
+    }
+    
+    function updateRequirement(elementId, isMet) {
+        const element = document.getElementById(elementId);
+        if (isMet) {
+            element.classList.add('met');
+            element.classList.remove('not-met');
+            element.textContent = element.textContent.replace('✗', '✓');
+        } else {
+            element.classList.add('not-met');
+            element.classList.remove('met');
+            element.textContent = element.textContent.replace('✓', '✗');
+        }
+    }
+    
+    function updatePasswordMatch() {
+        const password = passwordInput.value;
+        const confirmPassword = confirmPasswordInput.value;
+        
+        if (confirmPassword.length === 0) {
+            passwordMatch.textContent = '';
+            passwordMatch.className = 'password-match';
+        } else if (password === confirmPassword) {
+            passwordMatch.textContent = '✓ Passwords match';
+            passwordMatch.className = 'password-match match';
+        } else {
+            passwordMatch.textContent = '✗ Passwords do not match';
+            passwordMatch.className = 'password-match no-match';
+        }
+    }
+    
+    passwordInput.addEventListener('input', function() {
+        updatePasswordRequirements();
+        updatePasswordMatch();
+    });
+    
+    confirmPasswordInput.addEventListener('input', updatePasswordMatch);
+    
+    // Form validation
+    document.getElementById('registerForm').addEventListener('submit', function(e) {
+        const password = passwordInput.value;
+        const confirmPassword = confirmPasswordInput.value;
+        const requirements = validatePassword(password);
+        
+        // Check all requirements and collect missing ones
+        const missingRequirements = [];
+        if (!requirements.length) missingRequirements.push('At least 8 characters');
+        if (!requirements.uppercase) missingRequirements.push('One uppercase letter (A-Z)');
+        if (!requirements.lowercase) missingRequirements.push('One lowercase letter (a-z)');
+        if (!requirements.number) missingRequirements.push('One number (0-9)');
+        if (!requirements.special) missingRequirements.push('One special character');
+        
+        if (missingRequirements.length > 0) {
+            e.preventDefault();
+            const errorMessage = 'Password requirements not met:\n• ' + missingRequirements.join('\n• ');
+            alert(errorMessage);
+            
+            // Focus on password field
+            passwordInput.focus();
+            return false;
+        }
+        
+        if (password !== confirmPassword) {
+            e.preventDefault();
+            alert('Passwords do not match.');
+            confirmPasswordInput.focus();
+            return false;
+        }
+    });
+});
+</script>
+
+<style>
+.form-help {
+    display: block;
+    font-size: 0.8em;
+    color: #666;
+    margin-top: 4px;
+}
+
+.password-requirements {
+    margin-top: 8px;
+    padding: 8px;
+    background-color: #f8f9fa;
+    border-radius: 4px;
+    border: 1px solid #e9ecef;
+}
+
+.requirement {
+    font-size: 0.8em;
+    margin: 2px 0;
+    padding: 2px 0;
+    transition: color 0.3s ease;
+}
+
+.requirement.met {
+    color: #28a745;
+    font-weight: 500;
+}
+
+.requirement.not-met {
+    color: #dc3545;
+}
+
+.password-match {
+    font-size: 0.8em;
+    margin-top: 4px;
+    padding: 2px 0;
+}
+
+.password-match.match {
+    color: #28a745;
+}
+
+.password-match.no-match {
+    color: #dc3545;
+}
+
+.alert {
+    padding: 10px;
+    margin-bottom: 15px;
+    border-radius: 4px;
+}
+
+.alert-error {
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
+
+.alert-success {
+    background-color: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+
+.alert-info {
+    background-color: #d1ecf1;
+    color: #0c5460;
+    border: 1px solid #bee5eb;
+}
+</style>
 {% endblock %}

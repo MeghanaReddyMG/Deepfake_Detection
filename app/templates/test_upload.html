@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Upload</title>
+</head>
+<body>
+    <h1>Simple Upload Test</h1>
+    <form action="/upload" method="post" enctype="multipart/form-data">
+        <input type="file" name="file" accept="image/*,video/*,audio/*" required>
+        <button type="submit">Upload</button>
+    </form>
+    
+    <hr>
+    
+    <h2>Test Endpoint</h2>
+    <form action="/test_upload" method="post" enctype="multipart/form-data">
+        <input type="file" name="file" accept="image/*,video/*,audio/*" required>
+        <button type="submit">Test Upload</button>
+    </form>
+</body>
+</html>

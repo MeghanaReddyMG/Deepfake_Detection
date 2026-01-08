@@ -1,5 +1,5 @@
 # Ultra-lightweight Dockerfile for size-constrained deployments (target: <1GB)
-FROM python:3.11-alpine
+FROM python:3.11-slim
 
 # Set working directory
 WORKDIR /app
@@ -12,26 +12,25 @@ ENV FLASK_DEBUG=False
 ENV USE_LITE_VERSION=true
 ENV MINIMAL_MODE=true
 
-# Install only essential system dependencies
-RUN apk add --no-cache --virtual .build-deps \
+# Install system dependencies
+RUN apt-get update && apt-get install -y --no-install-recommends \
     gcc \
-    musl-dev \
-    jpeg-dev \
-    zlib-dev \
-    && apk add --no-cache \
-    jpeg \
-    zlib \
-    && rm -rf /var/cache/apk/*
+    g++ \
+    libjpeg-dev \
+    zlib1g-dev \
+    && rm -rf /var/lib/apt/lists/*
 
-# Upgrade pip
-RUN pip install --no-cache-dir --upgrade pip
+# Upgrade pip and install build tools
+RUN pip install --no-cache-dir --upgrade pip setuptools wheel
 
 # Copy minimal requirements
 COPY requirements-minimal.txt .
 
-# Install Python dependencies
-RUN pip install --no-cache-dir -r requirements-minimal.txt \
-    && apk del .build-deps
+# Install Python dependencies (keep build deps until after installation)
+RUN pip install --no-cache-dir -r requirements-minimal.txt
+
+# Clean up build dependencies and cache after successful installation
+RUN apt-get purge -y gcc g++ && apt-get autoremove -y && apt-get clean
 
 # Copy only essential application files
 COPY app/ ./app/

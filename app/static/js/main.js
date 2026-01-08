@@ -20,7 +20,13 @@ const LabState = {
         audio: JSON.parse(localStorage.getItem('audioHistory') || '[]')
     },
     totalAnalyses: 0,
-    fakeDetected: 0
+    fakeDetected: 0,
+    // Store selected files globally
+    selectedFiles: {
+        image: null,
+        video: null,
+        audio: null
+    }
 };
 
 function initializeLab() {
@@ -292,10 +298,17 @@ function switchSection(section, elements) {
 function initializeImageSection(elements) {
     console.log('📸 Setting up image section...');
     
+    if (!elements.imageInput) {
+        console.error('Image input not found');
+        return;
+    }
+    
     // File input handler
     elements.imageInput.addEventListener('change', (e) => {
         const file = e.target.files[0];
+        console.log('Image file selected:', file ? file.name : 'none');
         if (file && file.type.startsWith('image/')) {
+            LabState.selectedFiles.image = file;  // Store globally
             showImagePreview(file, elements);
         } else if (file) {
             showNotification('Please select a valid image file', 'error');
@@ -307,13 +320,17 @@ function initializeImageSection(elements) {
     
     // Action buttons
     elements.analyzeImageBtn.addEventListener('click', () => {
-        const file = elements.imageInput.files[0];
+        const file = LabState.selectedFiles.image || (elements.imageInput.files && elements.imageInput.files[0]);
+        console.log('Analyze button clicked, file:', file ? file.name : 'none');
         if (file) {
             analyzeFile(file, 'image', elements);
+        } else {
+            showNotification('Please select an image file first', 'error');
         }
     });
     
     elements.clearImageBtn.addEventListener('click', () => {
+        LabState.selectedFiles.image = null;
         clearImagePreview(elements);
     });
     
@@ -330,10 +347,17 @@ function initializeImageSection(elements) {
 function initializeVideoSection(elements) {
     console.log('🎬 Setting up video section...');
     
+    if (!elements.videoInput) {
+        console.error('Video input not found');
+        return;
+    }
+    
     // File input handler
     elements.videoInput.addEventListener('change', (e) => {
         const file = e.target.files[0];
+        console.log('Video file selected:', file ? file.name : 'none');
         if (file && file.type.startsWith('video/')) {
+            LabState.selectedFiles.video = file;  // Store globally
             showVideoPreview(file, elements);
         } else if (file) {
             showNotification('Please select a valid video file', 'error');
@@ -345,13 +369,17 @@ function initializeVideoSection(elements) {
     
     // Action buttons
     elements.analyzeVideoBtn.addEventListener('click', () => {
-        const file = elements.videoInput.files[0];
+        const file = LabState.selectedFiles.video || (elements.videoInput.files && elements.videoInput.files[0]);
+        console.log('Analyze button clicked, file:', file ? file.name : 'none');
         if (file) {
             analyzeFile(file, 'video', elements);
+        } else {
+            showNotification('Please select a video file first', 'error');
         }
     });
     
     elements.clearVideoBtn.addEventListener('click', () => {
+        LabState.selectedFiles.video = null;
         clearVideoPreview(elements);
     });
     
@@ -368,10 +396,17 @@ function initializeVideoSection(elements) {
 function initializeAudioSection(elements) {
     console.log('🎵 Setting up audio section...');
     
+    if (!elements.audioInput) {
+        console.error('Audio input not found');
+        return;
+    }
+    
     // File input handler
     elements.audioInput.addEventListener('change', (e) => {
         const file = e.target.files[0];
+        console.log('Audio file selected:', file ? file.name : 'none');
         if (file && file.type.startsWith('audio/')) {
+            LabState.selectedFiles.audio = file;  // Store globally
             showAudioPreview(file, elements);
         } else if (file) {
             showNotification('Please select a valid audio file', 'error');
@@ -383,13 +418,17 @@ function initializeAudioSection(elements) {
     
     // Action buttons
     elements.analyzeAudioBtn.addEventListener('click', () => {
-        const file = elements.audioInput.files[0];
+        const file = LabState.selectedFiles.audio || (elements.audioInput.files && elements.audioInput.files[0]);
+        console.log('Analyze button clicked, file:', file ? file.name : 'none');
         if (file) {
             analyzeFile(file, 'audio', elements);
+        } else {
+            showNotification('Please select an audio file first', 'error');
         }
     });
     
     elements.clearAudioBtn.addEventListener('click', () => {
+        LabState.selectedFiles.audio = null;
         clearAudioPreview(elements);
     });
     
@@ -485,6 +524,13 @@ function clearAudioPreview(elements) {
 
 async function analyzeFile(file, type, elements) {
     console.log(`Starting ${type} analysis...`);
+    console.log('File details:', file ? { name: file.name, size: file.size, type: file.type } : 'No file');
+    
+    if (!file) {
+        showNotification('No file selected. Please select a file first.', 'error');
+        closeAllModals(elements);
+        return;
+    }
     
     // Show analysis modal
     showAnalysisModal(type, elements);
@@ -493,17 +539,40 @@ async function analyzeFile(file, type, elements) {
         const formData = new FormData();
         formData.append('file', file);
         
-        const response = await fetch('/upload', {
-            method: 'POST',
-            body: formData
-        });
-        
-        if (!response.ok) {
-            throw new Error(`Analysis failed: ${response.statusText}`);
+        console.log('Sending upload request to /upload...');
+        console.log('FormData entries:');
+        for (let pair of formData.entries()) {
+            console.log('  ', pair[0], pair[1]);
         }
         
-        const data = await response.json();
+        const response = await fetch('/upload', {
+            method: 'POST',
+            body: formData,
+            credentials: 'same-origin'  // Include cookies for session
+        });
+        
+        console.log('Response status:', response.status, response.statusText);
+        console.log('Response headers:', [...response.headers.entries()]);
+        
+        const responseText = await response.text();
+        console.log('Response body:', responseText);
+        
+        if (!response.ok) {
+            throw new Error(`Analysis failed: ${response.statusText} - ${responseText}`);
+        }
+        
+        let data;
+        try {
+            data = JSON.parse(responseText);
+        } catch (e) {
+            throw new Error(`Invalid JSON response: ${responseText}`);
+        }
+        
         console.log('Analysis complete:', data);
+        
+        if (data.error) {
+            throw new Error(data.error);
+        }
         
         // Process and save results (include analysis_id from server)
         const analysisResult = processAnalysisResults(data.results, type, file.name, data.analysis_id);
@@ -524,6 +593,8 @@ async function analyzeFile(file, type, elements) {
 }
 
 function processAnalysisResults(results, type, filename, analysis_id) {
+    console.log('🔍 processAnalysisResults called with:', { results, type, filename, analysis_id });
+    
     const timestamp = new Date().toISOString();
     const id = analysis_id || Date.now().toString();  // Use server-provided ID or generate one
     
@@ -537,9 +608,18 @@ function processAnalysisResults(results, type, filename, analysis_id) {
     };
     
     if (Array.isArray(results)) {
-        // Video results - Enhanced for AI-generated content detection
-        const frameResults = results.filter(frame => frame.frame !== undefined); // Filter out summary
-        const videoSummary = results.find(item => item.video_summary);
+        // Check if this is video or image data
+        const hasVideoData = results.some(item => item.frame !== undefined || item.video_summary);
+        const hasImageData = results.some(item => item.image_summary || item.type === 'ai_detection');
+        
+        console.log('📊 Data type check - hasVideoData:', hasVideoData, 'hasImageData:', hasImageData);
+        
+        if (hasVideoData && !hasImageData) {
+            // Video results - Enhanced for AI-generated content detection
+            const frameResults = results.filter(frame => frame.frame !== undefined); // Filter out summary
+            const videoSummary = results.find(item => item.video_summary);
+            
+            console.log('📹 Video analysis - frameResults:', frameResults.length, 'videoSummary:', videoSummary);
         
         const fakeFrames = frameResults.filter(frame => 
             frame.face && frame.face.some(face => face.is_fake)
@@ -567,13 +647,13 @@ function processAnalysisResults(results, type, filename, analysis_id) {
         });
         
         const avgConfidence = confidenceCount > 0 ? totalConfidence / confidenceCount : 0;
-        
-        // Determine if video is fake based on multiple criteria
-        const deepfakeDetected = fakeFrames > frameResults.length * 0.3; // 30% threshold
-        const aiGeneratedDetected = aiGeneratedFrames > frameResults.length * 0.3;
         const overallAiScore = videoSummary ? videoSummary.video_summary.overall_ai_score : 0;
         
-        const overallFake = deepfakeDetected || aiGeneratedDetected || overallAiScore > 0.7;
+        // Determine if video is fake based on multiple criteria - LOWERED THRESHOLD
+        const deepfakeDetected = fakeFrames > frameResults.length * 0.3; // 30% threshold
+        const aiGeneratedDetected = aiGeneratedFrames > frameResults.length * 0.3 || overallAiScore > 0.4;
+        
+        const overallFake = deepfakeDetected || aiGeneratedDetected || overallAiScore > 0.4;  // Lowered from 0.7
         
         processedResult.summary = {
             totalFrames: frameResults.length,
@@ -587,13 +667,73 @@ function processAnalysisResults(results, type, filename, analysis_id) {
             temporalConsistency: videoSummary ? videoSummary.video_summary.temporal_consistency_score : 0,
             recommendation: videoSummary ? videoSummary.video_summary.recommendation : 'UNKNOWN'
         };
+        } else if (hasImageData) {
+            // Image results - Enhanced for AI-generated content
+            const imageResults = results.filter(item => !item.image_summary); // Filter out summary
+            const imageSummary = results.find(item => item.image_summary);
+            
+            console.log('🖼️ Image analysis - imageResults:', imageResults);
+            console.log('🖼️ Image analysis - imageSummary:', imageSummary);
+            
+            const fakeCount = imageResults.filter(item => item.is_fake || item.ai_generated || item.is_ai_generated).length;
+            const aiGeneratedCount = imageResults.filter(item => item.ai_generated || item.is_ai_generated).length;
+            
+            console.log('🖼️ fakeCount:', fakeCount, 'aiGeneratedCount:', aiGeneratedCount);
+            
+            // Calculate overall confidence from multiple sources
+            let totalConfidence = 0;
+            let confidenceCount = 0;
+            
+            imageResults.forEach(item => {
+                if (item.confidence !== undefined) {
+                    totalConfidence += item.confidence;
+                    confidenceCount++;
+                }
+                if (item.ai_confidence !== undefined) {
+                    totalConfidence += item.ai_confidence;
+                    confidenceCount++;
+                }
+            });
+            
+            const avgConfidence = confidenceCount > 0 ? totalConfidence / confidenceCount : 0;
+            const overallAiScore = imageSummary ? imageSummary.image_summary.ai_generated_likelihood : 0;
+            
+            console.log('🖼️ avgConfidence:', avgConfidence, 'overallAiScore:', overallAiScore);
+            
+            // Determine if image is fake based on multiple criteria - LOWERED THRESHOLD
+            const deepfakeDetected = fakeCount > 0;
+            const aiGeneratedDetected = aiGeneratedCount > 0 || overallAiScore > 0.4;  // Lowered from 0.7
+            const overallFake = deepfakeDetected || aiGeneratedDetected || overallAiScore > 0.4;  // Added direct score check
+            
+            console.log('🖼️ deepfakeDetected:', deepfakeDetected, 'aiGeneratedDetected:', aiGeneratedDetected, 'overallFake:', overallFake);
+            
+            processedResult.summary = {
+                totalFaces: imageResults.filter(item => item.face_id !== null && item.face_id !== undefined).length,
+                fakeFaces: fakeCount,
+                aiGeneratedContent: aiGeneratedCount,
+                overallFake,
+                confidence: Math.max(avgConfidence, overallAiScore || 0),
+                deepfakeDetected,
+                aiGeneratedDetected,
+                overallAiScore,
+                generationMethod: imageSummary ? imageSummary.image_summary.detected_generation_method : 'Unknown',
+                authenticity: imageSummary ? imageSummary.image_summary.overall_authenticity : 'UNKNOWN'
+            };
+            
+            console.log('🖼️ Final summary:', processedResult.summary);
+        }
     } else if (results && results.length > 0) {
         // Image results - Enhanced for AI-generated content
         const imageResults = results.filter(item => !item.image_summary); // Filter out summary
         const imageSummary = results.find(item => item.image_summary);
         
-        const fakeCount = imageResults.filter(face => face.is_fake).length;
-        const aiGeneratedCount = imageResults.filter(face => face.ai_generated).length;
+        console.log('🖼️ Image analysis - imageResults:', imageResults);
+        console.log('🖼️ Image analysis - imageSummary:', imageSummary);
+        
+        const fakeCount = imageResults.filter(item => item.is_fake || item.ai_generated || item.is_ai_generated).length;
+        const aiGeneratedCount = imageResults.filter(item => item.ai_generated || item.is_ai_generated).length;
+        
+        console.log('🖼️ fakeCount:', fakeCount, 'aiGeneratedCount:', aiGeneratedCount);
         
         // Calculate overall confidence from multiple sources
         let totalConfidence = 0;
@@ -613,10 +753,14 @@ function processAnalysisResults(results, type, filename, analysis_id) {
         const avgConfidence = confidenceCount > 0 ? totalConfidence / confidenceCount : 0;
         const overallAiScore = imageSummary ? imageSummary.image_summary.ai_generated_likelihood : 0;
         
-        // Determine if image is fake based on multiple criteria
+        console.log('🖼️ avgConfidence:', avgConfidence, 'overallAiScore:', overallAiScore);
+        
+        // Determine if image is fake based on multiple criteria - LOWERED THRESHOLD
         const deepfakeDetected = fakeCount > 0;
-        const aiGeneratedDetected = aiGeneratedCount > 0 || overallAiScore > 0.7;
-        const overallFake = deepfakeDetected || aiGeneratedDetected;
+        const aiGeneratedDetected = aiGeneratedCount > 0 || overallAiScore > 0.4;  // Lowered from 0.7
+        const overallFake = deepfakeDetected || aiGeneratedDetected || overallAiScore > 0.4;  // Added direct score check
+        
+        console.log('🖼️ deepfakeDetected:', deepfakeDetected, 'aiGeneratedDetected:', aiGeneratedDetected, 'overallFake:', overallFake);
         
         processedResult.summary = {
             totalFaces: imageResults.filter(item => item.face_id !== null && item.face_id !== undefined).length,
@@ -630,13 +774,19 @@ function processAnalysisResults(results, type, filename, analysis_id) {
             generationMethod: imageSummary ? imageSummary.image_summary.detected_generation_method : 'Unknown',
             authenticity: imageSummary ? imageSummary.image_summary.overall_authenticity : 'UNKNOWN'
         };
+        
+        console.log('🖼️ Final summary:', processedResult.summary);
     } else if (results && results.audio) {
         // Audio results - Enhanced for AI-generated content
         const audioSummary = results.audio_summary || {};
         
+        console.log('🎵 Audio analysis - results.audio:', results.audio);
+        
         const deepfakeDetected = results.audio.is_fake;
         const aiGeneratedDetected = results.audio.ai_generated;
         const overallFake = deepfakeDetected || aiGeneratedDetected;
+        
+        console.log('🎵 deepfakeDetected:', deepfakeDetected, 'aiGeneratedDetected:', aiGeneratedDetected, 'overallFake:', overallFake);
         
         processedResult.summary = {
             overallFake,
@@ -649,8 +799,11 @@ function processAnalysisResults(results, type, filename, analysis_id) {
             authenticity: audioSummary.authenticity_assessment || 'UNKNOWN',
             confidenceLevel: audioSummary.confidence_level || 'MEDIUM'
         };
+        
+        console.log('🎵 Final summary:', processedResult.summary);
     }
     
+    console.log('✅ Returning processedResult:', processedResult);
     return processedResult;
 }
 
@@ -713,6 +866,7 @@ function createHistoryItem(item) {
     const date = new Date(item.timestamp).toLocaleString();
     const isFake = item.summary && item.summary.overallFake;
     const confidence = item.summary && item.summary.confidence ? (item.summary.confidence * 100).toFixed(1) : '0.0';
+    const confidenceValue = item.summary && item.summary.confidence ? item.summary.confidence : 0;
     const userFeedback = item.userFeedback || null;
     const isCorrect = userFeedback ? (userFeedback.actualResult === isFake) : null;
     
@@ -882,6 +1036,7 @@ function showResultsModal(result, type, elements) {
 function createDetailedResults(result) {
     const isFake = result.summary && result.summary.overallFake;
     const confidence = result.summary && result.summary.confidence ? (result.summary.confidence * 100).toFixed(1) : '0.0';
+    const confidenceValue = result.summary && result.summary.confidence ? result.summary.confidence : 0;
     const userFeedback = result.userFeedback || null;
     const isCorrect = userFeedback ? (userFeedback.actualResult === isFake) : null;
     
@@ -891,7 +1046,7 @@ function createDetailedResults(result) {
                 <div class="result-status ${isFake ? 'fake' : 'real'}">
                     ${isFake ? 'DEEPFAKE DETECTED' : 'AUTHENTIC MEDIA'}
                 </div>
-                <div class="confidence-score confidence-${getConfidenceLevel(result.summary.confidence)}">
+                <div class="confidence-score confidence-${getConfidenceLevel(confidenceValue)}">
                     ${confidence}%
                 </div>
             </div>
@@ -1034,6 +1189,7 @@ function createDetailedResults(result) {
 }
 
 function getConfidenceLevel(confidence) {
+    if (!confidence || isNaN(confidence)) return 'low';
     if (confidence > 0.8) return 'high';
     if (confidence > 0.5) return 'medium';
     return 'low';

@@ -3,8 +3,11 @@ import os
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from flask import Flask
+import sys
+import os as os_module
+sys.path.insert(0, os_module.path.dirname(os_module.path.dirname(os_module.path.abspath(__file__))))
 from config import Config
-from routes import main_bp
+from app.routes import main_bp
 
 def create_app():
     app = Flask(__name__)
