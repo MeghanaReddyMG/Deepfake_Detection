@@ -16,7 +16,6 @@ A web application that detects AI-generated and manipulated media content includ
 
 2. **Clone and setup**
 ```bash
-git clone https://github.com/MeghanaReddyMG/Deepfake_Detection.git
 cd Deepfake_Detection
 python -m venv .venv
 .venv\Scripts\activate  # Windows
