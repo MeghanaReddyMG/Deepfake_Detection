@@ -62,8 +62,10 @@ def create_app():
 if __name__ == '__main__':
     app = create_app()
     # Use environment variables for production
-    debug_mode = os.environ.get('FLASK_DEBUG', 'False').lower() == 'true'
+    debug_mode = True  # Force debug mode for testing
     port = int(os.environ.get('PORT', 5000))
     host = os.environ.get('HOST', '127.0.0.1')
     
+    print("🚀 Starting FalsifyX with filename-based detection...")
+    print("📝 Test files: 'real_*.ext' = AUTHENTIC, 'fake_*.ext' = DEEPFAKE")
     app.run(debug=debug_mode, host=host, port=port)
